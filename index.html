@@ -26,11 +26,10 @@ body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;dis
     <strong id="panTitle">Pan 1</strong><span class="status" id="status">Initialisation…</span><div class="grow"></div>
     <div class="pan-list" id="panList"></div>
   </div>
-  <div class="notice">Tu remplis directement les vrais champs de ta trame originale. Chaque pan est une copie vierge de la trame. Les photos ajoutées seront placées à la fin du PDF exporté.</div>
+  <div class="notice">Tu remplis directement les vrais champs de ta trame originale. Les pans sont sauvegardés automatiquement quand tu changes de pan et avant l’export. Les photos ajoutées seront placées à la fin du PDF exporté.</div>
   <div class="error" id="error"></div>
   <div class="viewer-wrap"><div id="loading" class="loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;background:#59635f;z-index:5">Chargement de la trame originale…</div><div id="viewerContainer" class="pdfViewerContainer"><div id="viewer" class="pdfViewer"></div></div></div>
   <div class="bottom">
-    <button class="btn green" id="savePan">💾 Enregistrer ce pan</button>
     <button class="btn dark" id="addPan">＋ Ajouter un pan de toiture</button>
     <button class="btn secondary" id="photosBtn">📷 Photos (<span id="photoCount">0</span>)</button>
     <div class="grow"></div><span class="status" id="bottomStatus">Les données restent dans ton navigateur jusqu'à l'export.</span>
@@ -79,8 +78,8 @@ async function createPanViewer(i,bytes){
   state.pdfDoc=doc; state.bytes=bytes.slice(); state.linkService.setDocument(doc,null); state.viewer.setDocument(doc); showPan(i);
 }
 async function savePanAt(i){const state=pans[i];if(!state.pdfDoc)throw new Error('Le pan n’est pas encore chargé.');const saved=await state.pdfDoc.saveDocument();state.bytes=new Uint8Array(saved);return state.bytes;}
-async function saveCurrentPan(){status.textContent='Enregistrement du pan…';const bytes=await savePanAt(currentPan);status.textContent='Pan '+(currentPan+1)+' enregistré.';return bytes;}
-async function switchPan(i){try{if(i===currentPan)return;await saveCurrentPan();currentPan=i;updatePanUi();loading.style.display='flex';await createPanViewer(i,pans[i].bytes||baseBytes);showPan(i);loading.style.display='none';status.textContent='Pan '+(i+1)+' prêt.';}catch(e){console.error(e);fail('Impossible de changer de pan : '+(e.message||e));}}
+async function saveCurrentPan(silent=false){const bytes=await savePanAt(currentPan);if(!silent)status.textContent='Pan '+(currentPan+1)+' sauvegardé automatiquement.';return bytes;}
+async function switchPan(i){try{if(i===currentPan)return;await saveCurrentPan(true);currentPan=i;updatePanUi();loading.style.display='flex';await createPanViewer(i,pans[i].bytes||baseBytes);showPan(i);loading.style.display='none';status.textContent='Pan '+(i+1)+' prêt.';}catch(e){console.error(e);fail('Impossible de changer de pan : '+(e.message||e));}}
 async function addPan(){try{await saveCurrentPan();const i=pans.length;pans.push({bytes:null,viewer:null,pdfDoc:null,eventBus:null,linkService:null,container:null,ready:false});currentPan=i;updatePanUi();loading.style.display='flex';await createPanViewer(i,baseBytes);showPan(i);loading.style.display='none';status.textContent='Nouveau pan vierge prêt.';}catch(e){console.error(e);fail('Impossible d’ajouter un pan : '+(e.message||e));}}
 function renderPhotos(){
   const list=document.getElementById('photoList'); list.innerHTML=''; document.getElementById('photoCount').textContent=photos.length;
@@ -89,9 +88,31 @@ function renderPhotos(){
 }
 document.getElementById('photoInput').addEventListener('change',e=>{for(const f of e.target.files||[]){if(/^image\/(jpeg|png|webp)$/.test(f.type))photos.push({file:f,url:URL.createObjectURL(f)});}renderPhotos();e.target.value='';});
 async function imageToBytes(file){return new Uint8Array(await file.arrayBuffer());}
+function cleanFilePart(value){
+  return String(value||'').trim().replace(/[\\/:*?\"<>|]/g,'-').replace(/\s+/g,' ').replace(/^-+|-+$/g,'');
+}
+async function getExportIdentity(){
+  try{
+    const first=pans[0];
+    if(!first.bytes && first.pdfDoc){await savePanAt(0);}
+    const bytes=first.bytes||baseBytes;
+    const doc=await PDFLib.PDFDocument.load(bytes);
+    const form=doc.getForm();
+    let affaire='', client='';
+    try{affaire=form.getTextField('Affaire').getText()||'';}catch(e){}
+    try{client=form.getTextField('Client').getText()||'';}catch(e){}
+    return {affaire:cleanFilePart(affaire),client:cleanFilePart(client)};
+  }catch(e){console.warn('Impossible de lire Affaire/Client pour le nom du fichier:',e);return {affaire:'',client:''};}
+}
+function buildExportName(identity){
+  const parts=['Prise_de_cotes_renovation'];
+  if(identity.affaire) parts.push(identity.affaire);
+  if(identity.client) parts.push(identity.client);
+  return parts.join(' - ')+'.pdf';
+}
 async function exportPdf(){
   try{
-    await saveCurrentPan();
+    await saveCurrentPan(true);
     if(!window.PDFLib) throw new Error('PDF-lib n’est pas disponible.');
     status.textContent='Création du PDF final…';
     const out=await PDFLib.PDFDocument.create();
@@ -110,11 +131,10 @@ async function exportPdf(){
       const maxW=595, maxH=842; const dims=img.scale(1); const scale=Math.min(maxW/dims.width,maxH/dims.height,1); const w=dims.width*scale,h=dims.height*scale;
       const page=out.addPage([595,842]); page.drawImage(img,{x:(595-w)/2,y:(842-h)/2,width:w,height:h});
     }
-    const finalBytes=await out.save(); const blob=new Blob([finalBytes],{type:'application/pdf'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Prise_de_cotes_renovation.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000);
+    const finalBytes=await out.save(); const blob=new Blob([finalBytes],{type:'application/pdf'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; const identity=await getExportIdentity(); a.download=buildExportName(identity); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000);
     status.textContent='PDF final exporté — '+pans.length+' pan(s)'+(photos.length?' + '+photos.length+' photo(s)':'')+'.';
   }catch(e){console.error(e);status.textContent='Erreur export';alert('Le PDF final n’a pas pu être créé : '+(e.message||e));}
 }
-document.getElementById('savePan').onclick=()=>saveCurrentPan().catch(e=>{console.error(e);fail('Impossible d’enregistrer le pan : '+(e.message||e));});
 document.getElementById('addPan').onclick=addPan;
 document.getElementById('download').onclick=exportPdf;
 function currentViewer(){return pans[currentPan]?.viewer||null;}
