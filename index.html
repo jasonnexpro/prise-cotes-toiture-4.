@@ -7,72 +7,152 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <style>
-:root{--green:#0f3d2e;--green2:#17664b;--yellow:#f1c40f;--bg:#eef2ef;--card:#fff;--text:#173129}
+:root{--green:#0f3d2e;--green2:#17664b;--yellow:#f1c40f;--bg:#eef2ef;--card:#fff;--text:#173129;--muted:#687a72;--danger:#a52a2a}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
-body{overflow:hidden}.top{height:62px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:12px}.top h1{font-size:18px;margin:0}.top small{opacity:.8}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.primary{background:var(--yellow);color:#173129}.btn.secondary{background:#fff;color:var(--green)}.btn.dark{background:#255a49;color:#fff}.layout{height:calc(100vh - 62px);display:flex;flex-direction:column}.bar{background:#fff;border-bottom:1px solid #d6dfda;padding:8px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.status{font-size:13px;color:#64766e}.viewer-wrap{position:relative;flex:1;min-height:0;overflow:hidden}.pdfViewerContainer{position:absolute;inset:0;overflow:auto;background:#69736f}.pdfViewer{padding-bottom:30px}.page{margin:16px auto!important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-.notice{padding:8px 14px;background:#fff8d8;border-bottom:1px solid #eadf9a;font-size:13px}.error{background:#ffe8e8;color:#8b1d1d;padding:10px 14px;display:none}.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;background:#59635f;z-index:5}.loading.hide{display:none}
-@media(max-width:650px){.top{height:auto;min-height:58px;padding:8px 10px;align-items:flex-start}.top h1{font-size:15px}.top small{display:block;margin-top:2px}.actions .btn{padding:9px 10px;font-size:12px}.bar{font-size:12px;padding:7px 10px}.notice{font-size:12px}.page{margin:8px auto!important}}
+body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:8px 16px;gap:12px}.top h1{font-size:18px;margin:0}.top small{opacity:.8}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.primary{background:var(--yellow);color:#173129}.btn.secondary{background:#fff;color:var(--green)}.btn.dark{background:#255a49;color:#fff}.btn.green{background:#1f7a56;color:#fff}.btn.danger{background:#fff0f0;color:#8b1d1d;border:1px solid #e6b7b7}.layout{height:calc(100vh - 62px);display:flex;flex-direction:column}.bar{background:#fff;border-bottom:1px solid #d6dfda;padding:8px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.bar .grow{flex:1}.status{font-size:13px;color:#64766e}.notice{padding:8px 14px;background:#fff8d8;border-bottom:1px solid #eadf9a;font-size:13px}.error{background:#ffe8e8;color:#8b1d1d;padding:10px 14px;display:none}.viewer-wrap{position:relative;flex:1;min-height:0;overflow:hidden}.pdfViewerContainer{position:absolute;inset:0;overflow:auto;background:#69736f}.pdfViewer{padding-bottom:30px}.page{margin:16px auto!important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.bottom{background:#fff;border-top:1px solid #d6dfda;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.bottom .grow{flex:1}.panel{position:fixed;right:14px;bottom:70px;width:min(430px,calc(100vw - 28px));max-height:55vh;overflow:auto;background:#fff;border:1px solid #d6dfda;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.22);padding:14px;z-index:20;display:none}.panel.open{display:block}.panel h3{margin:0 0 10px;font-size:16px}.photo-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.photo-item{position:relative;border:1px solid #d6dfda;border-radius:9px;overflow:hidden;background:#f6f8f7}.photo-item img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.photo-item button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;width:25px;height:25px;background:#fff;color:#8b1d1d;font-weight:700;cursor:pointer}.empty{color:var(--muted);font-size:13px;padding:6px 0}.pan-list{display:flex;gap:6px;flex-wrap:wrap}.pan-pill{border:1px solid #cbd8d2;background:#f5f8f6;border-radius:18px;padding:6px 10px;font-size:13px;cursor:pointer}.pan-pill.active{background:var(--green);color:#fff;border-color:var(--green)}
+@media(max-width:650px){.top{min-height:58px;padding:8px 10px;align-items:flex-start}.top h1{font-size:15px}.top small{display:block;margin-top:2px}.actions .btn{padding:9px 10px;font-size:12px}.bar{font-size:12px;padding:7px 10px}.notice{font-size:12px}.page{margin:8px auto!important}.bottom{padding:8px}.photo-list{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
-<header class="top"><div><h1>📐 Prise de cotes — rénovation toiture</h1><small>Test indépendant — trame PDF originale</small></div><div class="actions"><button class="btn secondary" id="zoomOut">−</button><button class="btn secondary" id="zoomReset">100 %</button><button class="btn secondary" id="zoomIn">+</button><button class="btn primary" id="download">📄 Exporter le PDF</button></div></header>
+<header class="top">
+  <div><h1>📐 Prise de cotes — rénovation toiture</h1><small>Outil indépendant — trame PDF originale</small></div>
+  <div class="actions"><button class="btn secondary" id="zoomOut">−</button><button class="btn secondary" id="zoomReset">Adapter</button><button class="btn secondary" id="zoomIn">+</button><button class="btn primary" id="download">📄 Exporter le PDF</button></div>
+</header>
 <div class="layout">
-<div class="bar"><strong>Pan 1</strong><span class="status" id="status">Initialisation…</span></div>
-<div class="notice">Tu dois pouvoir cliquer directement dans les champs de ta trame originale et saisir les informations. Ce test ne recrée aucun champ HTML par-dessus le PDF.</div>
-<div class="error" id="error"></div>
-<div class="viewer-wrap"><div class="loading" id="loading">Chargement de la trame originale…</div><div id="viewerContainer" class="pdfViewerContainer"><div id="viewer" class="pdfViewer"></div></div></div>
+  <div class="bar">
+    <strong id="panTitle">Pan 1</strong><span class="status" id="status">Initialisation…</span><div class="grow"></div>
+    <div class="pan-list" id="panList"></div>
+  </div>
+  <div class="notice">Tu remplis directement les vrais champs de ta trame originale. Chaque pan est une copie vierge de la trame. Les photos ajoutées seront placées à la fin du PDF exporté.</div>
+  <div class="error" id="error"></div>
+  <div class="viewer-wrap"><div id="loading" class="loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;background:#59635f;z-index:5">Chargement de la trame originale…</div><div id="viewerContainer" class="pdfViewerContainer"><div id="viewer" class="pdfViewer"></div></div></div>
+  <div class="bottom">
+    <button class="btn green" id="savePan">💾 Enregistrer ce pan</button>
+    <button class="btn dark" id="addPan">＋ Ajouter un pan de toiture</button>
+    <button class="btn secondary" id="photosBtn">📷 Photos (<span id="photoCount">0</span>)</button>
+    <div class="grow"></div><span class="status" id="bottomStatus">Les données restent dans ton navigateur jusqu'à l'export.</span>
+  </div>
+</div>
+<div class="panel" id="photoPanel">
+  <h3>📷 Photos à ajouter au PDF</h3>
+  <div class="empty">Sélectionne plusieurs photos depuis le téléphone ou le PC. Elles seront ajoutées après les pans de toiture.</div>
+  <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" multiple style="margin-top:8px;max-width:100%">
+  <div class="photo-list" id="photoList"></div>
+  <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn secondary" id="closePhotos">Fermer</button></div>
 </div>
 <script>
 (function(){
 'use strict';
 const BASE='trame.pdf';
-const loading=document.getElementById('loading');
-const error=document.getElementById('error');
-const status=document.getElementById('status');
-let pdfDoc=null, viewer=null, eventBus=null, linkService=null, currentScale=1;
-function fail(msg){loading.classList.add('hide');error.style.display='block';error.textContent=msg;status.textContent='Erreur';}
-function ready(){
-  if(!window.pdfjsLib||!window.pdfjsViewer) return fail('Le moteur PDF n’est pas disponible.');
-  window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  eventBus=new pdfjsViewer.EventBus();
-  linkService=new pdfjsViewer.PDFLinkService({eventBus});
+const loading=document.getElementById('loading'), error=document.getElementById('error'), status=document.getElementById('status');
+const panTitle=document.getElementById('panTitle'), panList=document.getElementById('panList');
+let baseBytes=null, pdfDoc=null, viewer=null, eventBus=null, linkService=null, currentPan=0;
+let pans=[null];
+let photos=[];
+function fail(msg){loading.style.display='none';error.style.display='block';error.textContent=msg;status.textContent='Erreur';}
+function updatePanUi(){
+  panTitle.textContent='Pan '+(currentPan+1)+' / '+pans.length;
+  panList.innerHTML='';
+  pans.forEach((_,i)=>{const b=document.createElement('button');b.className='pan-pill'+(i===currentPan?' active':'');b.textContent='Pan '+(i+1);b.onclick=()=>switchPan(i);panList.appendChild(b);});
+}
+async function loadBase(){
+  const resp=await fetch(BASE,{cache:'no-store'}); if(!resp.ok) throw new Error('Impossible de charger trame.pdf ('+resp.status+').');
+  return new Uint8Array(await resp.arrayBuffer());
+}
+function initViewer(){
+  if(!window.pdfjsLib||!window.pdfjsViewer) throw new Error('Le moteur PDF n’est pas disponible.');
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  eventBus=new pdfjsViewer.EventBus(); linkService=new pdfjsViewer.PDFLinkService({eventBus});
   viewer=new pdfjsViewer.PDFViewer({container:document.getElementById('viewerContainer'),eventBus,linkService,renderInteractiveForms:true,removePageBorders:false,enableScripting:false});
   linkService.setViewer(viewer);
-  eventBus.on('pagesinit',function(){
-    viewer.currentScaleValue='page-width';
-    currentScale=viewer.currentScale;
-    loading.classList.add('hide');
-    status.textContent='Trame chargée — clique directement dans un champ.';
-  });
-  eventBus.on('pagesloaded',function(){status.textContent='Trame chargée — champs PDF prêts.';});
-  load();
+  eventBus.on('pagesinit',()=>{viewer.currentScaleValue='page-width'; loading.style.display='none'; status.textContent='Trame chargée — clique directement dans un champ.';});
+  eventBus.on('pagesloaded',()=>{loading.style.display='none';});
 }
-async function load(){
+async function openBytes(bytes){
+  loading.style.display='flex'; error.style.display='none'; status.textContent='Chargement…';
+  if(pdfDoc){try{await pdfDoc.destroy();}catch(e){}}
+  pdfDoc=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
+  viewer.setDocument(pdfDoc); linkService.setDocument(pdfDoc,null);
+}
+async function saveCurrentPan(){
+  if(!pdfDoc) throw new Error('Le pan n’est pas encore chargé.');
+  status.textContent='Enregistrement du pan…';
+  const saved=await pdfDoc.saveDocument();
+  pans[currentPan]=new Uint8Array(saved);
+  status.textContent='Pan '+(currentPan+1)+' enregistré.';
+  updatePanUi();
+  return pans[currentPan];
+}
+async function switchPan(i){
   try{
-    const resp=await fetch(BASE,{cache:'no-store'});
-    if(!resp.ok) throw new Error('Impossible de charger trame.pdf ('+resp.status+').');
-    const buf=await resp.arrayBuffer();
-    pdfDoc=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
-    viewer.setDocument(pdfDoc); linkService.setDocument(pdfDoc,null);
-  }catch(e){console.error(e);fail('Impossible de charger la trame PDF : '+(e&&e.message?e.message:e));}
+    if(i===currentPan) return;
+    await saveCurrentPan();
+    currentPan=i; updatePanUi();
+    await openBytes(pans[i]||baseBytes);
+  }catch(e){console.error(e);fail('Impossible de changer de pan : '+(e.message||e));}
 }
-async function download(){
-  if(!pdfDoc) return;
+async function addPan(){
   try{
-    status.textContent='Préparation du PDF…';
-    const data=await pdfDoc.saveDocument();
-    const blob=new Blob([data],{type:'application/pdf'});
-    const url=URL.createObjectURL(blob); const a=document.createElement('a');
-    a.href=url;a.download='Prise_de_cotes_renovation.pdf';document.body.appendChild(a);a.click();a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),2000);status.textContent='PDF exporté.';
-  }catch(e){console.error(e);status.textContent='Erreur export';alert('Le PDF n’a pas pu être enregistré : '+e.message);}
+    await saveCurrentPan();
+    pans.push(null); currentPan=pans.length-1; updatePanUi();
+    await openBytes(baseBytes);
+    status.textContent='Nouveau pan vierge prêt.';
+  }catch(e){console.error(e);fail('Impossible d’ajouter un pan : '+(e.message||e));}
 }
-document.getElementById('download').onclick=download;
-document.getElementById('zoomIn').onclick=()=>{viewer.currentScale=Math.min(viewer.currentScale+0.15,3);};
-document.getElementById('zoomOut').onclick=()=>{viewer.currentScale=Math.max(viewer.currentScale-0.15,.5);};
-document.getElementById('zoomReset').onclick=()=>{viewer.currentScaleValue='page-width';};
-ready();
+function renderPhotos(){
+  const list=document.getElementById('photoList'); list.innerHTML=''; document.getElementById('photoCount').textContent=photos.length;
+  if(!photos.length){list.innerHTML='<div class="empty" style="grid-column:1/-1">Aucune photo sélectionnée.</div>';return;}
+  photos.forEach((p,i)=>{const d=document.createElement('div');d.className='photo-item';const img=document.createElement('img');img.src=p.url;const b=document.createElement('button');b.textContent='×';b.title='Retirer';b.onclick=()=>{URL.revokeObjectURL(p.url);photos.splice(i,1);renderPhotos();};d.append(img,b);list.appendChild(d);});
+}
+document.getElementById('photoInput').addEventListener('change',e=>{for(const f of e.target.files||[]){if(/^image\/(jpeg|png|webp)$/.test(f.type))photos.push({file:f,url:URL.createObjectURL(f)});}renderPhotos();e.target.value='';});
+async function imageToBytes(file){return new Uint8Array(await file.arrayBuffer());}
+async function exportPdf(){
+  try{
+    await saveCurrentPan();
+    if(!window.PDFLib) throw new Error('PDF-lib n’est pas disponible.');
+    status.textContent='Création du PDF final…';
+    const out=await PDFLib.PDFDocument.create();
+    // On aplatit chaque pan en image haute résolution : cela garantit que les valeurs saisies sont visibles dans le PDF final.
+    for(let i=0;i<pans.length;i++){
+      const bytes=pans[i]||baseBytes;
+      const doc=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
+      for(let p=1;p<=doc.numPages;p++){
+        const page=await doc.getPage(p); const baseViewport=page.getViewport({scale:1});
+        const scale=Math.min(2.0, 180/72); // environ 180 dpi, bon compromis qualité/taille
+        const viewport=page.getViewport({scale});
+        const canvas=document.createElement('canvas'); canvas.width=Math.ceil(viewport.width); canvas.height=Math.ceil(viewport.height);
+        await page.render({canvasContext:canvas.getContext('2d'),viewport,annotationMode:pdfjsLib.AnnotationMode.ENABLE_STORAGE}).promise;
+        const blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',0.94));
+        const imgBytes=new Uint8Array(await blob.arrayBuffer()); const img=await out.embedJpg(imgBytes);
+        const outPage=out.addPage([baseViewport.width,baseViewport.height]); outPage.drawImage(img,{x:0,y:0,width:baseViewport.width,height:baseViewport.height});
+        canvas.width=1;canvas.height=1;
+      }
+      await doc.destroy();
+    }
+    for(let i=0;i<photos.length;i++){
+      const f=photos[i].file; const bytes=await imageToBytes(f); let img;
+      if(f.type==='image/png'){img=await out.embedPng(bytes);}else{img=await out.embedJpg(bytes);}
+      const maxW=595, maxH=842; const dims=img.scale(1); const scale=Math.min(maxW/dims.width,maxH/dims.height,1); const w=dims.width*scale,h=dims.height*scale;
+      const page=out.addPage([595,842]); page.drawImage(img,{x:(595-w)/2,y:(842-h)/2,width:w,height:h});
+    }
+    const finalBytes=await out.save(); const blob=new Blob([finalBytes],{type:'application/pdf'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='Prise_de_cotes_renovation.pdf'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000);
+    status.textContent='PDF final exporté — '+pans.length+' pan(s)'+(photos.length?' + '+photos.length+' photo(s)':'')+'.';
+  }catch(e){console.error(e);status.textContent='Erreur export';alert('Le PDF final n’a pas pu être créé : '+(e.message||e));}
+}
+document.getElementById('savePan').onclick=()=>saveCurrentPan().catch(e=>{console.error(e);fail('Impossible d’enregistrer le pan : '+(e.message||e));});
+document.getElementById('addPan').onclick=addPan;
+document.getElementById('download').onclick=exportPdf;
+document.getElementById('zoomIn').onclick=()=>{if(viewer)viewer.currentScale=Math.min(viewer.currentScale+0.15,3);};
+document.getElementById('zoomOut').onclick=()=>{if(viewer)viewer.currentScale=Math.max(viewer.currentScale-0.15,.4);};
+document.getElementById('zoomReset').onclick=()=>{if(viewer)viewer.currentScaleValue='page-width';};
+document.getElementById('photosBtn').onclick=()=>document.getElementById('photoPanel').classList.toggle('open');
+document.getElementById('closePhotos').onclick=()=>document.getElementById('photoPanel').classList.remove('open');
+(async function(){
+  try{initViewer();baseBytes=await loadBase();updatePanUi();await openBytes(baseBytes);}catch(e){console.error(e);fail('Impossible de charger la trame PDF : '+(e.message||e));}
+})();
 })();
 </script>
 </body>
