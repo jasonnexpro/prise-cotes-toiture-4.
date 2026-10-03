@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prise de cotes — rénovation toiture</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.js"></script>
+<style>
+:root{--green:#0f3d2e;--green2:#17664b;--yellow:#f1c40f;--bg:#eef2ef;--card:#fff;--text:#173129}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{overflow:hidden}.top{height:62px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:12px}.top h1{font-size:18px;margin:0}.top small{opacity:.8}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.primary{background:var(--yellow);color:#173129}.btn.secondary{background:#fff;color:var(--green)}.btn.dark{background:#255a49;color:#fff}.layout{height:calc(100vh - 62px);display:flex;flex-direction:column}.bar{background:#fff;border-bottom:1px solid #d6dfda;padding:8px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.status{font-size:13px;color:#64766e}.viewer-wrap{position:relative;flex:1;min-height:0;overflow:hidden}.pdfViewerContainer{position:absolute;inset:0;overflow:auto;background:#69736f}.pdfViewer{padding-bottom:30px}.page{margin:16px auto!important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.notice{padding:8px 14px;background:#fff8d8;border-bottom:1px solid #eadf9a;font-size:13px}.error{background:#ffe8e8;color:#8b1d1d;padding:10px 14px;display:none}.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;background:#59635f;z-index:5}.loading.hide{display:none}
+@media(max-width:650px){.top{height:auto;min-height:58px;padding:8px 10px;align-items:flex-start}.top h1{font-size:15px}.top small{display:block;margin-top:2px}.actions .btn{padding:9px 10px;font-size:12px}.bar{font-size:12px;padding:7px 10px}.notice{font-size:12px}.page{margin:8px auto!important}}
+</style>
+</head>
+<body>
+<header class="top"><div><h1>📐 Prise de cotes — rénovation toiture</h1><small>Test indépendant — trame PDF originale</small></div><div class="actions"><button class="btn secondary" id="zoomOut">−</button><button class="btn secondary" id="zoomReset">100 %</button><button class="btn secondary" id="zoomIn">+</button><button class="btn primary" id="download">📄 Exporter le PDF</button></div></header>
+<div class="layout">
+<div class="bar"><strong>Pan 1</strong><span class="status" id="status">Initialisation…</span></div>
+<div class="notice">Tu dois pouvoir cliquer directement dans les champs de ta trame originale et saisir les informations. Ce test ne recrée aucun champ HTML par-dessus le PDF.</div>
+<div class="error" id="error"></div>
+<div class="viewer-wrap"><div class="loading" id="loading">Chargement de la trame originale…</div><div id="viewerContainer" class="pdfViewerContainer"><div id="viewer" class="pdfViewer"></div></div></div>
+</div>
+<script>
+(function(){
+'use strict';
+const BASE='trame.pdf';
+const loading=document.getElementById('loading');
+const error=document.getElementById('error');
+const status=document.getElementById('status');
+let pdfDoc=null, viewer=null, eventBus=null, linkService=null, currentScale=1;
+function fail(msg){loading.classList.add('hide');error.style.display='block';error.textContent=msg;status.textContent='Erreur';}
+function ready(){
+  if(!window.pdfjsLib||!window.pdfjsViewer) return fail('Le moteur PDF n’est pas disponible.');
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  eventBus=new pdfjsViewer.EventBus();
+  linkService=new pdfjsViewer.PDFLinkService({eventBus});
+  viewer=new pdfjsViewer.PDFViewer({container:document.getElementById('viewerContainer'),eventBus,linkService,renderInteractiveForms:true,removePageBorders:false,enableScripting:false});
+  linkService.setViewer(viewer);
+  eventBus.on('pagesinit',function(){
+    viewer.currentScaleValue='page-width';
+    currentScale=viewer.currentScale;
+    loading.classList.add('hide');
+    status.textContent='Trame chargée — clique directement dans un champ.';
+  });
+  eventBus.on('pagesloaded',function(){status.textContent='Trame chargée — champs PDF prêts.';});
+  load();
+}
+async function load(){
+  try{
+    const resp=await fetch(BASE,{cache:'no-store'});
+    if(!resp.ok) throw new Error('Impossible de charger trame.pdf ('+resp.status+').');
+    const buf=await resp.arrayBuffer();
+    pdfDoc=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
+    viewer.setDocument(pdfDoc); linkService.setDocument(pdfDoc,null);
+  }catch(e){console.error(e);fail('Impossible de charger la trame PDF : '+(e&&e.message?e.message:e));}
+}
+async function download(){
+  if(!pdfDoc) return;
+  try{
+    status.textContent='Préparation du PDF…';
+    const data=await pdfDoc.saveDocument();
+    const blob=new Blob([data],{type:'application/pdf'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url;a.download='Prise_de_cotes_renovation.pdf';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);status.textContent='PDF exporté.';
+  }catch(e){console.error(e);status.textContent='Erreur export';alert('Le PDF n’a pas pu être enregistré : '+e.message);}
+}
+document.getElementById('download').onclick=download;
+document.getElementById('zoomIn').onclick=()=>{viewer.currentScale=Math.min(viewer.currentScale+0.15,3);};
+document.getElementById('zoomOut').onclick=()=>{viewer.currentScale=Math.max(viewer.currentScale-0.15,.5);};
+document.getElementById('zoomReset').onclick=()=>{viewer.currentScaleValue='page-width';};
+ready();
+})();
+</script>
+</body>
+</html>
