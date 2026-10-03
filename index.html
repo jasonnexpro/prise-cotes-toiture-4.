@@ -12,21 +12,32 @@
 :root{--green:#0f3d2e;--green2:#17664b;--yellow:#f1c40f;--bg:#eef2ef;--card:#fff;--text:#173129;--muted:#687a72;--danger:#a52a2a}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
 body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:8px 16px;gap:12px}.top h1{font-size:18px;margin:0}.top small{opacity:.8}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.primary{background:var(--yellow);color:#173129}.btn.secondary{background:#fff;color:var(--green)}.btn.dark{background:#255a49;color:#fff}.btn.green{background:#1f7a56;color:#fff}.btn.danger{background:#fff0f0;color:#8b1d1d;border:1px solid #e6b7b7}.layout{height:calc(100vh - 62px);display:flex;flex-direction:column}.bar{background:#fff;border-bottom:1px solid #d6dfda;padding:8px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.bar .grow{flex:1}.status{font-size:13px;color:#64766e}.notice{padding:8px 14px;background:#fff8d8;border-bottom:1px solid #eadf9a;font-size:13px}.error{background:#ffe8e8;color:#8b1d1d;padding:10px 14px;display:none}.viewer-wrap{position:relative;flex:1;min-height:0;overflow:hidden}.pdfViewerContainer{position:absolute;inset:0;overflow:hidden;background:#69736f}.pdfViewerPane{position:absolute;inset:0;overflow:auto;background:#69736f;display:none}.pdfViewerPane.active{display:block}.pdfViewer{padding-bottom:30px}.page{margin:16px auto!important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-.bottom{background:#fff;border-top:1px solid #d6dfda;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.bottom .grow{flex:1}.panel{position:fixed;right:14px;bottom:70px;width:min(430px,calc(100vw - 28px));max-height:55vh;overflow:auto;background:#fff;border:1px solid #d6dfda;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.22);padding:14px;z-index:20;display:none}.panel.open{display:block}.panel h3{margin:0 0 10px;font-size:16px}.photo-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.photo-item{position:relative;border:1px solid #d6dfda;border-radius:9px;overflow:hidden;background:#f6f8f7}.photo-item img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.photo-item button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;width:25px;height:25px;background:#fff;color:#8b1d1d;font-weight:700;cursor:pointer}.empty{color:var(--muted);font-size:13px;padding:6px 0}.pan-list{display:flex;gap:6px;flex-wrap:wrap}.pan-pill{border:1px solid #cbd8d2;background:#f5f8f6;border-radius:18px;padding:6px 10px;font-size:13px;cursor:pointer}.pan-pill.active{background:var(--green);color:#fff;border-color:var(--green)}
-@media(max-width:650px){.top{min-height:58px;padding:8px 10px;align-items:flex-start}.top h1{font-size:15px}.top small{display:block;margin-top:2px}.actions .btn{padding:9px 10px;font-size:12px}.bar{font-size:12px;padding:7px 10px}.notice{font-size:12px}.page{margin:8px auto!important}.bottom{padding:8px}.photo-list{grid-template-columns:repeat(3,1fr)}}
+.bottom{background:#fff;border-top:1px solid #d6dfda;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.bottom .grow{flex:1}.panel{position:fixed;right:14px;bottom:70px;width:min(430px,calc(100vw - 28px));max-height:55vh;overflow:auto;background:#fff;border:1px solid #d6dfda;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.22);padding:14px;z-index:20;display:none}.panel.open{display:block}.panel h3{margin:0 0 10px;font-size:16px}.photo-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.photo-item{position:relative;border:1px solid #d6dfda;border-radius:9px;overflow:hidden;background:#f6f8f7}.photo-item img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.photo-item button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;width:25px;height:25px;background:#fff;color:#8b1d1d;font-weight:700;cursor:pointer}.empty{color:var(--muted);font-size:13px;padding:6px 0}.pan-list{display:flex;gap:6px;flex-wrap:wrap}.pan-pill{border:1px solid #cbd8d2;background:#f5f8f6;border-radius:18px;padding:6px 10px;font-size:13px;cursor:pointer}.pan-pill.active{background:var(--green);color:#fff;border-color:var(--green)}.identity{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.identity label{font-size:12px;font-weight:700;color:#3f514a}
+.identity input{width:155px;min-width:120px;padding:7px 9px;border:1px solid #cbd8d2;border-radius:8px;background:#fff;color:var(--text)}
+.pan-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+@media(max-width:900px){.identity{width:100%}.identity input{flex:1;min-width:120px}.pan-head{width:100%}}
+
+@media(max-width:650px){.identity{display:grid;grid-template-columns:auto 1fr}.identity label{align-self:center}.identity input{width:100%}.top{min-height:58px;padding:8px 10px;align-items:flex-start}.top h1{font-size:15px}.top small{display:block;margin-top:2px}.actions .btn{padding:9px 10px;font-size:12px}.bar{font-size:12px;padding:7px 10px}.notice{font-size:12px}.page{margin:8px auto!important}.bottom{padding:8px}.photo-list{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
 <header class="top">
-  <div><h1>📐 Prise de cotes — rénovation toiture</h1><small>Outil indépendant — trame PDF originale</small></div>
+  <div><h1>📐 Prise de cotes — rénovation toiture</h1><small>Outil indépendant — aucun lien avec Apps Script</small></div>
   <div class="actions"><button class="btn secondary" id="zoomOut">−</button><button class="btn secondary" id="zoomReset">Adapter</button><button class="btn secondary" id="zoomIn">+</button><button class="btn primary" id="download">📄 Exporter le PDF</button></div>
 </header>
 <div class="layout">
   <div class="bar">
-    <strong id="panTitle">Pan 1</strong><span class="status" id="status">Initialisation…</span><div class="grow"></div>
+    <div class="identity">
+      <label for="affaireInput">N° chantier</label>
+      <input id="affaireInput" type="text" placeholder="Ex. 123456" autocomplete="off">
+      <label for="clientInput">Nom du client</label>
+      <input id="clientInput" type="text" placeholder="Ex. DUPONT" autocomplete="off">
+    </div>
+    <div class="pan-head"><strong id="panTitle">Pan 1 / 1</strong><span class="status" id="status">Initialisation…</span></div>
+    <div class="grow"></div>
     <div class="pan-list" id="panList"></div>
   </div>
-  <div class="notice">Tu remplis directement les vrais champs de ta trame originale. Si tu arrives depuis un suivi, le N° d’affaire, le client et le conducteur peuvent être préremplis. Les pans sont sauvegardés automatiquement quand tu changes de pan et avant l’export. Les photos ajoutées seront placées à la fin du PDF exporté.</div>
   <div class="error" id="error"></div>
   <div class="viewer-wrap"><div id="loading" class="loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;background:#59635f;z-index:5">Chargement de la trame originale…</div><div id="viewerContainer" class="pdfViewerContainer"><div id="viewer" class="pdfViewer"></div></div></div>
   <div class="bottom">
@@ -51,9 +62,15 @@ const panTitle=document.getElementById('panTitle'), panList=document.getElementB
 let baseBytes=null, currentPan=0;
 let pans=[{bytes:null,viewer:null,pdfDoc:null,eventBus:null,linkService:null,container:null,ready:false}];
 let photos=[];
-const launchParams=new URLSearchParams(window.location.search);
-const launchData={affaire:(launchParams.get('affaire')||'').trim(),client:(launchParams.get('client')||'').trim(),intervenant:(launchParams.get('intervenant')||'').trim()};
-let launchPrefillApplied=false;
+const affaireInput=document.getElementById('affaireInput');
+const clientInput=document.getElementById('clientInput');
+
+function getManualIdentity(){
+  return {
+    affaire:(affaireInput.value||'').trim(),
+    client:(clientInput.value||'').trim()
+  };
+}
 
 function fail(msg){loading.style.display='none';error.style.display='block';error.textContent=msg;status.textContent='Erreur';}
 function updatePanUi(){
@@ -78,22 +95,23 @@ async function createPanViewer(i,bytes){
   state.linkService.setViewer(state.viewer);
   state.eventBus.on('pagesinit',()=>{state.viewer.currentScaleValue='page-width';state.ready=true;if(i===currentPan){loading.style.display='none';status.textContent='Trame chargée — clique directement dans un champ.';}});
   state.eventBus.on('pagesloaded',()=>{if(i===currentPan)loading.style.display='none';});
-  const preparedBytes=await applyLaunchPrefillBytes(bytes.slice(),i); const loadingTask=pdfjsLib.getDocument({data:preparedBytes.slice()}); const doc=await loadingTask.promise;
+  const preparedBytes=await applyIdentityToBytes(bytes.slice()); const loadingTask=pdfjsLib.getDocument({data:preparedBytes.slice()}); const doc=await loadingTask.promise;
   state.pdfDoc=doc; state.bytes=preparedBytes.slice(); state.linkService.setDocument(doc,null); state.viewer.setDocument(doc); showPan(i);
 }
-async function applyLaunchPrefillBytes(bytes,i){
-  if(i!==0 || launchPrefillApplied) return bytes;
-  if(!launchData.affaire && !launchData.client && !launchData.intervenant) return bytes;
+async function applyIdentityToBytes(bytes){
   if(!window.PDFLib) return bytes;
+  const identity=getManualIdentity();
+  if(!identity.affaire && !identity.client) return bytes;
   try{
     const doc=await PDFLib.PDFDocument.load(bytes);
     const form=doc.getForm();
-    if(launchData.affaire){try{form.getTextField('Affaire').setText(launchData.affaire);}catch(e){}}
-    if(launchData.client){try{form.getTextField('Client').setText(launchData.client);}catch(e){}}
-    if(launchData.intervenant){try{form.getTextField('Intervenant').setText(launchData.intervenant);}catch(e){}}
-    launchPrefillApplied=true;
+    if(identity.affaire){try{form.getTextField('Affaire').setText(identity.affaire);}catch(e){}}
+    if(identity.client){try{form.getTextField('Client').setText(identity.client);}catch(e){}}
     return new Uint8Array(await doc.save());
-  }catch(e){console.warn('Préremplissage depuis le suivi:',e);return bytes;}
+  }catch(e){
+    console.warn('Impossible d’appliquer le N° chantier/client :',e);
+    return bytes;
+  }
 }
 async function savePanAt(i){const state=pans[i];if(!state.pdfDoc)throw new Error('Le pan n’est pas encore chargé.');const saved=await state.pdfDoc.saveDocument();state.bytes=new Uint8Array(saved);return state.bytes;}
 async function saveCurrentPan(silent=false){const bytes=await savePanAt(currentPan);if(!silent)status.textContent='Pan '+(currentPan+1)+' sauvegardé automatiquement.';return bytes;}
@@ -110,17 +128,8 @@ function cleanFilePart(value){
   return String(value||'').trim().replace(/[\\/:*?\"<>|]/g,'-').replace(/\s+/g,' ').replace(/^-+|-+$/g,'');
 }
 async function getExportIdentity(){
-  try{
-    const first=pans[0];
-    if(!first.bytes && first.pdfDoc){await savePanAt(0);}
-    const bytes=first.bytes||baseBytes;
-    const doc=await PDFLib.PDFDocument.load(bytes);
-    const form=doc.getForm();
-    let affaire='', client='';
-    try{affaire=form.getTextField('Affaire').getText()||'';}catch(e){}
-    try{client=form.getTextField('Client').getText()||'';}catch(e){}
-    return {affaire:cleanFilePart(affaire),client:cleanFilePart(client)};
-  }catch(e){console.warn('Impossible de lire Affaire/Client pour le nom du fichier:',e);return {affaire:'',client:''};}
+  const identity=getManualIdentity();
+  return {affaire:cleanFilePart(identity.affaire),client:cleanFilePart(identity.client)};
 }
 function buildExportName(identity){
   const parts=['Prise_de_cotes_renovation'];
@@ -135,7 +144,8 @@ async function exportPdf(){
     status.textContent='Création du PDF final…';
     const out=await PDFLib.PDFDocument.create();
     for(let i=0;i<pans.length;i++){
-      const bytes=pans[i].bytes||baseBytes;
+      let bytes=pans[i].bytes||baseBytes;
+      bytes=await applyIdentityToBytes(bytes);
       const src=await PDFLib.PDFDocument.load(bytes);
       // Aplatit les vrais champs du formulaire avant de copier les pages.
       // Ainsi chaque pan reste indépendant et les valeurs sont définitivement visibles.
@@ -153,6 +163,22 @@ async function exportPdf(){
     status.textContent='PDF final exporté — '+pans.length+' pan(s)'+(photos.length?' + '+photos.length+' photo(s)':'')+'.';
   }catch(e){console.error(e);status.textContent='Erreur export';alert('Le PDF final n’a pas pu être créé : '+(e.message||e));}
 }
+function restoreIdentity(){
+  try{
+    affaireInput.value=sessionStorage.getItem('priseCotes.affaire')||'';
+    clientInput.value=sessionStorage.getItem('priseCotes.client')||'';
+  }catch(e){}
+}
+function saveIdentity(){
+  try{
+    sessionStorage.setItem('priseCotes.affaire',affaireInput.value||'');
+    sessionStorage.setItem('priseCotes.client',clientInput.value||'');
+  }catch(e){}
+}
+affaireInput.addEventListener('input',saveIdentity);
+clientInput.addEventListener('input',saveIdentity);
+restoreIdentity();
+
 document.getElementById('addPan').onclick=addPan;
 document.getElementById('download').onclick=exportPdf;
 function currentViewer(){return pans[currentPan]?.viewer||null;}
