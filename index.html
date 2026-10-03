@@ -73,8 +73,16 @@ function initViewer(){
 }
 async function openBytes(bytes){
   loading.style.display='flex'; error.style.display='none'; status.textContent='Chargement…';
-  if(pdfDoc){try{await pdfDoc.destroy();}catch(e){}}
-  pdfDoc=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
+  // PDFViewer doit être détaché de l'ancien document avant de le détruire.
+  // Sinon, lors d'un changement de pan, PDF.js peut tenter de détruire un document déjà détruit.
+  if(pdfDoc){
+    try{viewer.setDocument(null);}catch(e){console.warn('viewer.setDocument(null):',e);}
+    try{linkService.setDocument(null,null);}catch(e){console.warn('linkService.setDocument(null):',e);}
+    try{await pdfDoc.destroy();}catch(e){console.warn('pdfDoc.destroy():',e);}
+    pdfDoc=null;
+  }
+  const loadingTask=pdfjsLib.getDocument({data:bytes.slice()});
+  pdfDoc=await loadingTask.promise;
   viewer.setDocument(pdfDoc); linkService.setDocument(pdfDoc,null);
 }
 async function saveCurrentPan(){
