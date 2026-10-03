@@ -26,7 +26,7 @@ body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;dis
     <strong id="panTitle">Pan 1</strong><span class="status" id="status">Initialisation…</span><div class="grow"></div>
     <div class="pan-list" id="panList"></div>
   </div>
-  <div class="notice">Tu remplis directement les vrais champs de ta trame originale. Les pans sont sauvegardés automatiquement quand tu changes de pan et avant l’export. Les photos ajoutées seront placées à la fin du PDF exporté.</div>
+  <div class="notice">Tu remplis directement les vrais champs de ta trame originale. Si tu arrives depuis un suivi, le N° d’affaire, le client et le conducteur peuvent être préremplis. Les pans sont sauvegardés automatiquement quand tu changes de pan et avant l’export. Les photos ajoutées seront placées à la fin du PDF exporté.</div>
   <div class="error" id="error"></div>
   <div class="viewer-wrap"><div id="loading" class="loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;background:#59635f;z-index:5">Chargement de la trame originale…</div><div id="viewerContainer" class="pdfViewerContainer"><div id="viewer" class="pdfViewer"></div></div></div>
   <div class="bottom">
@@ -51,6 +51,10 @@ const panTitle=document.getElementById('panTitle'), panList=document.getElementB
 let baseBytes=null, currentPan=0;
 let pans=[{bytes:null,viewer:null,pdfDoc:null,eventBus:null,linkService:null,container:null,ready:false}];
 let photos=[];
+const launchParams=new URLSearchParams(window.location.search);
+const launchData={affaire:(launchParams.get('affaire')||'').trim(),client:(launchParams.get('client')||'').trim(),intervenant:(launchParams.get('intervenant')||'').trim()};
+let launchPrefillApplied=false;
+
 function fail(msg){loading.style.display='none';error.style.display='block';error.textContent=msg;status.textContent='Erreur';}
 function updatePanUi(){
   panTitle.textContent='Pan '+(currentPan+1)+' / '+pans.length;
@@ -74,8 +78,22 @@ async function createPanViewer(i,bytes){
   state.linkService.setViewer(state.viewer);
   state.eventBus.on('pagesinit',()=>{state.viewer.currentScaleValue='page-width';state.ready=true;if(i===currentPan){loading.style.display='none';status.textContent='Trame chargée — clique directement dans un champ.';}});
   state.eventBus.on('pagesloaded',()=>{if(i===currentPan)loading.style.display='none';});
-  const loadingTask=pdfjsLib.getDocument({data:bytes.slice()}); const doc=await loadingTask.promise;
-  state.pdfDoc=doc; state.bytes=bytes.slice(); state.linkService.setDocument(doc,null); state.viewer.setDocument(doc); showPan(i);
+  const preparedBytes=await applyLaunchPrefillBytes(bytes.slice(),i); const loadingTask=pdfjsLib.getDocument({data:preparedBytes.slice()}); const doc=await loadingTask.promise;
+  state.pdfDoc=doc; state.bytes=preparedBytes.slice(); state.linkService.setDocument(doc,null); state.viewer.setDocument(doc); showPan(i);
+}
+async function applyLaunchPrefillBytes(bytes,i){
+  if(i!==0 || launchPrefillApplied) return bytes;
+  if(!launchData.affaire && !launchData.client && !launchData.intervenant) return bytes;
+  if(!window.PDFLib) return bytes;
+  try{
+    const doc=await PDFLib.PDFDocument.load(bytes);
+    const form=doc.getForm();
+    if(launchData.affaire){try{form.getTextField('Affaire').setText(launchData.affaire);}catch(e){}}
+    if(launchData.client){try{form.getTextField('Client').setText(launchData.client);}catch(e){}}
+    if(launchData.intervenant){try{form.getTextField('Intervenant').setText(launchData.intervenant);}catch(e){}}
+    launchPrefillApplied=true;
+    return new Uint8Array(await doc.save());
+  }catch(e){console.warn('Préremplissage depuis le suivi:',e);return bytes;}
 }
 async function savePanAt(i){const state=pans[i];if(!state.pdfDoc)throw new Error('Le pan n’est pas encore chargé.');const saved=await state.pdfDoc.saveDocument();state.bytes=new Uint8Array(saved);return state.bytes;}
 async function saveCurrentPan(silent=false){const bytes=await savePanAt(currentPan);if(!silent)status.textContent='Pan '+(currentPan+1)+' sauvegardé automatiquement.';return bytes;}
