@@ -16,6 +16,17 @@ body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;dis
 @media(max-width:900px){.pan-head{width:100%}}
 
 @media(max-width:650px){.top{min-height:58px;padding:8px 10px;align-items:flex-start}.top h1{font-size:15px}.top small{display:block;margin-top:2px}.actions .btn{padding:9px 10px;font-size:12px}.bar{font-size:12px;padding:7px 10px}.notice{font-size:12px}.page{margin:8px auto!important}.bottom{padding:8px}.photo-list{grid-template-columns:repeat(3,1fr)}}
+#pdfSheet{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;justify-content:center;padding:10px}
+#pdfSheet[hidden]{display:none}
+.pdf-sheet-box{width:min(520px,100%);background:#fff;border:1px solid #cbd9d2;border-radius:16px;box-shadow:0 12px 40px rgba(5,35,25,.3);padding:14px;display:grid;gap:10px;text-align:center;color:#0f3d2e;font-family:inherit}
+.pdf-sheet-box b{font-size:16px}
+.pdf-sheet-name{font-size:13px;color:#33433b;overflow-wrap:anywhere}
+.pdf-sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pdf-sheet-actions button{min-height:46px;border-radius:12px;border:1px solid #cbd9d2;background:#f4faf6;font-weight:800;font-size:15px;color:#0f3d2e}
+.pdf-sheet-actions #pdfShareBtn{background:#0f7a4b;border-color:#0f7a4b;color:#fff}
+.pdf-sheet-msg{font-size:12px;color:#8a4b00}
+.pdf-sheet-msg:empty{display:none}
+.pdf-sheet-close{border:0;background:none;color:#376454;font-weight:700;min-height:36px}
 </style>
 </head>
 <body>
@@ -112,6 +123,14 @@ function buildExportName(identity){
   if(identity.client) parts.push(identity.client);
   return parts.join(' - ')+'.pdf';
 }
+// Sur téléphone : feuille « PDF prêt » avec Partager / Enregistrer (le partage doit partir d'un appui de l'utilisateur).
+function canSharePdf(){try{return window.matchMedia('(hover:none) and (pointer:coarse)').matches&&typeof navigator.share==='function'&&typeof File==='function';}catch(e){return false;}}
+function savePdfFile(file){const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+function showPdfSheet(file){let el=document.getElementById('pdfSheet');if(!el){el=document.createElement('div');el.id='pdfSheet';document.body.appendChild(el);}
+  const kb=Math.max(1,Math.round(file.size/1024));el.innerHTML='<div class="pdf-sheet-box"><b>📄 PDF prêt</b><div class="pdf-sheet-name"></div><div class="pdf-sheet-actions"><button type="button" id="pdfShareBtn">📤 Partager</button><button type="button" id="pdfSaveBtn">⬇ Enregistrer</button></div><div class="pdf-sheet-msg" id="pdfSheetMsg"></div><button type="button" class="pdf-sheet-close" id="pdfCloseBtn">Fermer</button></div>';
+  el.querySelector('.pdf-sheet-name').textContent=file.name+' · '+(kb>1024?(kb/1024).toLocaleString('fr-FR',{maximumFractionDigits:1})+' Mo':kb+' ko');el.hidden=false;
+  document.getElementById('pdfCloseBtn').onclick=()=>{el.hidden=true;};document.getElementById('pdfSaveBtn').onclick=()=>savePdfFile(file);
+  document.getElementById('pdfShareBtn').onclick=async()=>{try{if(navigator.canShare&&!navigator.canShare({files:[file]}))throw new Error('fichiers');await navigator.share({files:[file],title:file.name.replace(/\.pdf$/,'')});}catch(e){if(e&&e.name==='AbortError')return;document.getElementById('pdfSheetMsg').textContent='Le partage n’est pas disponible ici : utilisez « ⬇ Enregistrer ».';}};}
 async function exportPdf(){
   try{
     await saveCurrentPan(true);
@@ -133,7 +152,9 @@ async function exportPdf(){
       const maxW=595, maxH=842; const dims=img.scale(1); const scale=Math.min(maxW/dims.width,maxH/dims.height,1); const w=dims.width*scale,h=dims.height*scale;
       const page=out.addPage([595,842]); page.drawImage(img,{x:(595-w)/2,y:(842-h)/2,width:w,height:h});
     }
-    const finalBytes=await out.save(); const blob=new Blob([finalBytes],{type:'application/pdf'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; const identity=await getExportIdentity(); a.download=buildExportName(identity); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000);
+    const finalBytes=await out.save();
+    if(canSharePdf()){const id0=await getExportIdentity();showPdfSheet(new File([finalBytes],buildExportName(id0),{type:'application/pdf'}));status.textContent='PDF final prêt — '+pans.length+' pan(s)'+(photos.length?' + '+photos.length+' photo(s)':'')+'.';return;}
+    const blob=new Blob([finalBytes],{type:'application/pdf'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; const identity=await getExportIdentity(); a.download=buildExportName(identity); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000);
     status.textContent='PDF final exporté — '+pans.length+' pan(s)'+(photos.length?' + '+photos.length+' photo(s)':'')+'.';
   }catch(e){console.error(e);status.textContent='Erreur export';alert('Le PDF final n’a pas pu être créé : '+(e.message||e));}
 }
