@@ -66,14 +66,14 @@ body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;dis
 </div>
 <div class="panel" id="photoPanel">
   <h3>📷 Photos à ajouter au PDF</h3>
-  <div class="empty">Choisissez une ou plusieurs photos. Elles sont allégées automatiquement et placées après les pans, une par page. Vous pouvez écrire une légende sous chaque photo.</div>
+  <div class="empty">Choisis une ou plusieurs photos. Elles sont allégées automatiquement et placées après les pans, une par page. Tu peux écrire une légende sous chaque photo.</div>
   <input id="photoInput" type="file" accept="image/*" multiple style="margin-top:8px;max-width:100%">
   <div class="photo-list" id="photoList"></div>
   <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn secondary" id="closePhotos">Fermer</button></div>
 </div>
 <div class="overlay" id="resumeDialog" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="resumeTitle"><h2 id="resumeTitle">Relevé en cours</h2><p id="resumeText"></p><div class="row"><button class="btn primary" id="resumeYes">Reprendre ce relevé</button><button class="btn secondary" id="resumeNo">Nouveau relevé</button></div></div></div>
 <div class="overlay" id="whereDialog" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="whereTitle"><h2 id="whereTitle">📂 Où déposer le PDF de la prise de cotes</h2>
-  <ol class="steps"><li>Ouvrez l'explorateur de fichiers et allez dans :<br><span class="path" id="wherePath">W:\Business\Triangle energie\AFFAIRES</span></li><li>Ouvrez le dossier du client.</li><li>Créez un dossier nommé :<br><span class="path">11 - PRISE DE COTE</span></li><li>Déposez-y le PDF de la prise de cotes.</li><li>Envoyez un mail à BE Réno Énergie et à Sécurité Énergie avec le lien du dossier.</li></ol>
+  <ol class="steps"><li>Ouvre l'explorateur de fichiers et va dans :<br><span class="path" id="wherePath">W:\Business\Triangle energie\AFFAIRES</span></li><li>Ouvre le dossier du client.</li><li>Crée un dossier nommé :<br><span class="path">11 - PRISE DE COTE</span></li><li>Dépose-y le PDF de la prise de cotes.</li><li>Envoie un mail à BE Réno Énergie et à Sécurité Énergie avec le lien du dossier.</li></ol>
   <p class="status" id="whereMsg"></p>
   <div class="row"><button class="btn secondary" id="copyPath">📋 Copier le chemin</button><button class="btn primary" id="whereClose">Fermer</button></div></div></div>
 <div id="fieldSheet" hidden><div class="fs-head"><b id="fsLabel"></b><span id="fsPos"></span></div><input id="fsInput" autocomplete="off" enterkeyhint="next"><div class="fs-nav"><button class="btn secondary" id="fsPrev">◀ Précédent</button><button class="btn primary" id="fsOk">✓ OK</button><button class="btn secondary" id="fsNext">Suivant ▶</button></div></div>
@@ -92,7 +92,7 @@ const prefill={Affaire:params.get('affaire')||'',Client:params.get('client')||''
 const hasPrefill=Object.values(prefill).some(Boolean);
 function fail(msg){loading.style.display='none';error.style.display='block';error.textContent=msg;status.textContent='Erreur';}
 function newPanState(name,bytes){return {name,bytes,viewer:null,pdfDoc:null,eventBus:null,linkService:null,container:null,ready:false,userZoom:false};}
-function helpText(){return TOUCH?'Touchez une case pour la remplir.':'Cliquez dans une case pour la remplir.';}
+function helpText(){return TOUCH?'Touche une case pour la remplir.':'Clique dans une case pour la remplir.';}
 
 // ---------- Sauvegarde automatique sur l'appareil (IndexedDB) ----------
 const DB='prise_cotes_toiture',STORE='kv',KEY='releve';
@@ -105,7 +105,7 @@ function schedulePersist(){if(!started)return;clearTimeout(persistTimer);persist
 async function persistNow(){if(!started)return;clearTimeout(persistTimer);try{const st=pans[currentPan];if(st&&st.pdfDoc)await savePanAt(currentPan);
   await idbSet({v:1,savedAt:Date.now(),current:currentPan,pans:pans.map(p=>({name:p.name,bytes:p.bytes})),photos:photos.map(p=>({blob:p.blob,caption:p.caption||'',name:p.name||''}))});
   bottomStatus.textContent='✓ Enregistré sur ce téléphone à '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
- }catch(e){console.warn(e);bottomStatus.textContent='⚠ Sauvegarde sur le téléphone impossible : exportez le PDF avant de fermer.';}}
+ }catch(e){console.warn(e);bottomStatus.textContent='⚠ Sauvegarde sur le téléphone impossible : exporte le PDF avant de fermer.';}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persistNow();});
 
 // ---------- Trame : texte centré, infos générales ----------
@@ -189,7 +189,7 @@ function showPdfSheet(file){let el=document.getElementById('pdfSheet');if(!el){e
   const kb=Math.max(1,Math.round(file.size/1024));el.innerHTML='<div class="pdf-sheet-box"><b>📄 PDF prêt</b><div class="pdf-sheet-name"></div><div class="pdf-sheet-actions"><button type="button" id="pdfShareBtn">📤 Partager</button><button type="button" id="pdfSaveBtn">⬇ Enregistrer</button></div><div class="pdf-sheet-msg" id="pdfSheetMsg"></div><button type="button" class="pdf-sheet-where" id="pdfWhereBtn">📂 Où déposer le PDF ?</button><button type="button" class="pdf-sheet-close" id="pdfCloseBtn">Fermer</button></div>';
   el.querySelector('.pdf-sheet-name').textContent=file.name+' · '+(kb>1024?(kb/1024).toLocaleString('fr-FR',{maximumFractionDigits:1})+' Mo':kb+' ko');el.hidden=false;
   document.getElementById('pdfCloseBtn').onclick=()=>{el.hidden=true;};document.getElementById('pdfSaveBtn').onclick=()=>savePdfFile(file);document.getElementById('pdfWhereBtn').onclick=openWhere;
-  document.getElementById('pdfShareBtn').onclick=async()=>{try{if(navigator.canShare&&!navigator.canShare({files:[file]}))throw new Error('fichiers');await navigator.share({files:[file],title:file.name.replace(/\.pdf$/,'')});}catch(e){if(e&&e.name==='AbortError')return;document.getElementById('pdfSheetMsg').textContent='Le partage n’est pas disponible ici : utilisez « ⬇ Enregistrer ».';}};}
+  document.getElementById('pdfShareBtn').onclick=async()=>{try{if(navigator.canShare&&!navigator.canShare({files:[file]}))throw new Error('fichiers');await navigator.share({files:[file],title:file.name.replace(/\.pdf$/,'')});}catch(e){if(e&&e.name==='AbortError')return;document.getElementById('pdfSheetMsg').textContent='Le partage n’est pas disponible ici : utilise « ⬇ Enregistrer ».';}};}
 async function exportPdf(){
   try{
     closeSheet();await saveCurrentPan();
@@ -228,7 +228,7 @@ function openWhere(){document.getElementById('whereMsg').textContent='';document
 document.getElementById('whereBtn').onclick=openWhere;
 document.getElementById('whereClose').onclick=()=>{document.getElementById('whereDialog').hidden=true;};
 document.getElementById('whereDialog').addEventListener('click',e=>{if(e.target.id==='whereDialog')e.target.hidden=true;});
-document.getElementById('copyPath').onclick=async()=>{const t=document.getElementById('wherePath').textContent;const m=document.getElementById('whereMsg');try{await navigator.clipboard.writeText(t);m.textContent='✓ Chemin copié.';}catch(e){m.textContent='Copie impossible ici : sélectionnez le chemin à la main.';}};
+document.getElementById('copyPath').onclick=async()=>{const t=document.getElementById('wherePath').textContent;const m=document.getElementById('whereMsg');try{await navigator.clipboard.writeText(t);m.textContent='✓ Chemin copié.';}catch(e){m.textContent='Copie impossible ici : sélectionne le chemin à la main.';}};
 
 // ---------- Boutons ----------
 document.getElementById('addPan').onclick=addPan;
@@ -243,12 +243,12 @@ document.getElementById('zoomReset').onclick=()=>{const st=pans[currentPan];if(s
 let resizeTimer=null;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{const st=pans[currentPan];if(st&&!st.userZoom)fitPage(st);},200);});
 document.getElementById('photosBtn').onclick=()=>document.getElementById('photoPanel').classList.toggle('open');
 document.getElementById('closePhotos').onclick=()=>document.getElementById('photoPanel').classList.remove('open');
-document.getElementById('newBtn').onclick=async()=>{if(!confirm('Commencer un nouveau relevé ? Le relevé en cours sera effacé de ce téléphone (pensez à l’exporter avant).'))return;started=false;clearTimeout(persistTimer);await idbDel();location.reload();};
+document.getElementById('newBtn').onclick=async()=>{if(!confirm('Commencer un nouveau relevé ? Le relevé en cours sera effacé de ce téléphone (pense à l’exporter avant).'))return;started=false;clearTimeout(persistTimer);await idbDel();location.reload();};
 
 // ---------- Démarrage ----------
 async function startNew(){pans=[];photos=[];const bytes=hasPrefill?await fillGeneral(baseBytes,prefill):baseBytes;pans.push(newPanState('Pan 1',bytes));currentPan=0;updatePanUi();renderPhotos();await createPanViewer(0,bytes);started=true;await persistNow();if(hasPrefill)status.textContent='Affaire, client, date et intervenant repris du suivi. '+helpText();}
 async function resume(saved){pans=saved.pans.map((p,i)=>newPanState(p.name||('Pan '+(i+1)),p.bytes?new Uint8Array(p.bytes):baseBytes));photos=(saved.photos||[]).filter(p=>p&&p.blob).map(p=>({blob:p.blob,caption:p.caption||'',name:p.name||''}));currentPan=Math.min(Math.max(0,saved.current||0),pans.length-1);updatePanUi();renderPhotos();await createPanViewer(currentPan,pans[currentPan].bytes);started=true;status.textContent='Relevé repris. '+helpText();bottomStatus.textContent='✓ Enregistré sur ce téléphone';}
-function askResume(saved,info){return new Promise(ok=>{const d=document.getElementById('resumeDialog');const when=new Date(saved.savedAt||Date.now());let t='Un relevé est enregistré sur ce téléphone'+(info.Affaire?' pour l’affaire '+info.Affaire:'')+(info.Client?' ('+info.Client+')':'')+' : '+saved.pans.length+' pan(s), '+(saved.photos||[]).length+' photo(s), le '+when.toLocaleDateString('fr-FR')+' à '+when.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'.';if(hasPrefill&&prefill.Affaire&&prefill.Affaire!==info.Affaire)t+=' Vous ouvrez l’outil pour l’affaire '+prefill.Affaire+' : choisissez « Nouveau relevé » pour la commencer (exportez d’abord l’ancien si besoin).';document.getElementById('resumeText').textContent=t;d.hidden=false;loading.style.display='none';document.getElementById('resumeYes').onclick=()=>{d.hidden=true;ok(true);};document.getElementById('resumeNo').onclick=()=>{if(!confirm('Le relevé enregistré sera effacé de ce téléphone. Continuer ?'))return;d.hidden=true;ok(false);};});}
+function askResume(saved,info){return new Promise(ok=>{const d=document.getElementById('resumeDialog');const when=new Date(saved.savedAt||Date.now());let t='Un relevé est enregistré sur ce téléphone'+(info.Affaire?' pour l’affaire '+info.Affaire:'')+(info.Client?' ('+info.Client+')':'')+' : '+saved.pans.length+' pan(s), '+(saved.photos||[]).length+' photo(s), le '+when.toLocaleDateString('fr-FR')+' à '+when.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'.';if(hasPrefill&&prefill.Affaire&&prefill.Affaire!==info.Affaire)t+=' Tu ouvres l’outil pour l’affaire '+prefill.Affaire+' : choisis « Nouveau relevé » pour la commencer (exporte d’abord l’ancien si besoin).';document.getElementById('resumeText').textContent=t;d.hidden=false;loading.style.display='none';document.getElementById('resumeYes').onclick=()=>{d.hidden=true;ok(true);};document.getElementById('resumeNo').onclick=()=>{if(!confirm('Le relevé enregistré sera effacé de ce téléphone. Continuer ?'))return;d.hidden=true;ok(false);};});}
 (async function(){
   try{
     baseBytes=await centerFields(await loadBase());
