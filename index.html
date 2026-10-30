@@ -312,9 +312,7 @@ function peZoom(z,cx,cy){const w=pe.wrap,r=w.getBoundingClientRect();cx=cx??r.wi
 function peHandles(m){if(!m)return [];if(m.t==='rect')return [{k:'c0',x:m.x1,y:m.y1},{k:'c1',x:m.x2,y:m.y1},{k:'c2',x:m.x2,y:m.y2},{k:'c3',x:m.x1,y:m.y2}];if(m.t==='arrow')return [{k:'e1',x:m.x1,y:m.y1},{k:'e2',x:m.x2,y:m.y2}];if(m.t==='bubble'&&m.ax!=null)return [{k:'tip',x:m.ax,y:m.ay}];if(m.t==='line')return (m.pts||[]).map((q,k)=>({k:'p'+k,x:q.x,y:q.y}));return [];}
 function peDraw(extra){if(!pe.img)return;const c=pe.cv,ctx=c.getContext('2d'),k=pe.z*c._dpr;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);ctx.setTransform(k,0,0,k,0,0);ctx.drawImage(pe.img,0,0,pe.W,pe.H);
  paintMarks(ctx,extra?pe.marks.concat([extra]):pe.marks,pe.W,pe.H,true);const m=pe.marks[pe.sel];if(!m)return;const U=peU();
- // sélection : cadre pointillé + poignées
- let b;if(m.t==='rect')b={x:Math.min(m.x1,m.x2),y:Math.min(m.y1,m.y2),w:Math.abs(m.x2-m.x1),h:Math.abs(m.y2-m.y1)};else if(m.t==='arrow')b={x:Math.min(m.x1,m.x2),y:Math.min(m.y1,m.y2),w:Math.abs(m.x2-m.x1),h:Math.abs(m.y2-m.y1)};else if(m.t==='line'){const xs=m.pts.map(q=>q.x),ys=m.pts.map(q=>q.y);b={x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)};}else b=peBox(ctx,U,String(m.text||'').trim()?m.text:'Texte…',m.x,m.y);
- const g=8/pe.z;ctx.setLineDash([8/pe.z,5/pe.z]);ctx.strokeStyle='#1d63d8';ctx.lineWidth=2.5/pe.z;ctx.strokeRect(b.x-g,b.y-g,b.w+2*g,b.h+2*g);ctx.setLineDash([]);
+ // sélection : poignées seulement (plus de cadre pointillé, demande de l'utilisateur : il gênait la lecture)
  peHandles(m).forEach(h=>{ctx.fillStyle=(m.t==='line'&&h.k==='p'+pe.vsel)?'#1d63d8':'#fff';ctx.strokeStyle='#1d63d8';ctx.lineWidth=3/pe.z;ctx.beginPath();ctx.arc(h.x,h.y,11/pe.z,0,7);ctx.fill();ctx.stroke();});}
 function pePt(e){const r=pe.cv.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*pe.W,y:(e.clientY-r.top)/r.height*pe.H};}
 function peSegD(p,a,b){const dx=b.x-a.x,dy=b.y-a.y,L=dx*dx+dy*dy;let t=L?((p.x-a.x)*dx+(p.y-a.y)*dy)/L:0;t=Math.max(0,Math.min(1,t));return Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy));}
