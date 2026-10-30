@@ -82,7 +82,7 @@ body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;dis
 'use strict';
 const BASE='trame.pdf';
 const GENERAL=['Date','Client','Affaire','Intervenant'];
-const NUMERIC=/^([a-k]|x[1-6]|\d{1,2}|Long couverture|Hauteur faitage|Base goute 1|Base goute 2|Largeur pignon|Longueur long pan|Rampant|Axe faitage|Avant faitiere)$/;
+const NUMERIC=/^([a-k]|x[1-6]|\d{1,2}|Long couverture|Hauteur faitage|Base goute 1|Base goute 2|Largeur pignon|Longueur long pan|Rampant|Axe faitage|Avant faitiere|Qte travee|Largeur travee)$/;
 const TOUCH=window.matchMedia('(hover:none) and (pointer:coarse)').matches;
 const loading=document.getElementById('loading'), error=document.getElementById('error'), status=document.getElementById('status'), bottomStatus=document.getElementById('bottomStatus');
 const panTitle=document.getElementById('panTitle'), panList=document.getElementById('panList');
@@ -152,7 +152,7 @@ async function deletePan(){closeSheet();if(pans.length<2){alert('Il faut garder 
 // ---------- Saisie au doigt : grande zone en bas de l'écran ----------
 const sheet=document.getElementById('fieldSheet'),fsInput=document.getElementById('fsInput'),fsLabel=document.getElementById('fsLabel'),fsPos=document.getElementById('fsPos');
 let sheetField=null;
-function fieldLabel(n){if(/^[a-k]$/.test(n))return 'Cote '+n;if(/^\d{1,2}$/.test(n))return 'Tableau annexe — ligne '+String.fromCharCode(64+Number(n));if(/^x[1-6]$/.test(n))return 'Section des pannes — '+n;const map={Date:'Date',Client:'Client',Affaire:'N° d’affaire',Intervenant:'Intervenant',Bat:'Bât.',Rampant:'Rampant',Plat:'Type de faîtage — Plat',Boudin:'Type de faîtage — Boudin','Ventilée':'Type de faîtage — Ventilée',Bois:'Type de pannes — Bois',Mince:'Type de pannes — Profil mince',Epais:'Type de pannes — Profil épais'};return map[n]||n;}
+function fieldLabel(n){if(/^[a-k]$/.test(n))return 'Cote '+n;if(/^\d{1,2}$/.test(n))return 'Tableau annexe — ligne '+String.fromCharCode(64+Number(n));if(/^x[1-6]$/.test(n))return 'Section des pannes — '+n;const map={Date:'Date',Client:'Client',Affaire:'N° d’affaire',Intervenant:'Intervenant',Bat:'Bât.',Rampant:'Rampant',Plat:'Type de faîtage — Plat',Boudin:'Type de faîtage — Boudin','Ventilée':'Type de faîtage — Ventilée',Bois:'Type de pannes — Bois',Mince:'Type de pannes — Profil mince',Epais:'Type de pannes — Profil épais','Qte travee':'Filets de sous-face — Qté de travées','Largeur travee':'Filets de sous-face — Largeur de travée'};return map[n]||n;}
 // Ordre « Suivant » : celui de la trame (date, client…, puis a, b, c…, puis les autres cotes).
 let fieldOrder=[];
 function currentFields(){const pane=pans[currentPan]?.container;if(!pane)return [];const rank=el=>{const i=fieldOrder.indexOf(el.name);return i<0?9999:i;};return [...pane.querySelectorAll('.annotationLayer input[type=text],.annotationLayer textarea')].map(el=>({el,k:rank(el),r:el.getBoundingClientRect()})).sort((a,b)=>a.k-b.k||(Math.abs(a.r.top-b.r.top)>6?a.r.top-b.r.top:a.r.left-b.r.left)).map(x=>x.el);}
@@ -205,7 +205,13 @@ async function exportPdf(){
       if(i>0)GENERAL.forEach(n=>{const v=String(gen[n]||'').trim();if(!v)return;try{form.getTextField(n).setText(v);}catch(e){}});
       form.getFields().forEach(f=>{try{if(f.setAlignment)f.setAlignment(PDFLib.TextAlignment.Center);}catch(e){}});
       // Aplatit les champs : les valeurs deviennent définitivement visibles.
+      // Titre de la page : « N° d'affaire - Nom du client - Rampant » à la place de « TRAME PRINCIPE DE PRISE DE COTES »
+      let ramp='';try{ramp=String(form.getTextField('Rampant').getText()||'').trim();}catch(e){}
       try{form.flatten({updateFieldAppearances:true});}catch(e){console.warn('flatten pan '+(i+1)+':',e);}
+      try{const pg0=src.getPage(0);const tf=await src.embedFont(PDFLib.StandardFonts.HelveticaBold);
+       const title=winAnsi([gen.Affaire,gen.Client,ramp||(pans[i].name||('Pan '+(i+1)))].map(v=>String(v||'').trim()).filter(Boolean).join(' - '));
+       pg0.drawRectangle({x:106,y:779,width:385,height:33,color:PDFLib.rgb(1,1,1)});let fs=20;while(fs>9&&tf.widthOfTextAtSize(title,fs)>378)fs-=0.5;
+       pg0.drawText(title,{x:297.5-tf.widthOfTextAtSize(title,fs)/2,y:789,size:fs,font:tf,color:PDFLib.rgb(0,0,0)});}catch(e){console.warn('titre pan '+(i+1)+':',e);}
       const pages=await out.copyPages(src,src.getPageIndices());pages.forEach(pg=>out.addPage(pg));
     }
     const font=await out.embedFont(PDFLib.StandardFonts.Helvetica);
