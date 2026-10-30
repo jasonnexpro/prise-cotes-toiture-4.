@@ -9,12 +9,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.js"></script>
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <style>
-:root{--green:#0f3d2e;--green2:#17664b;--yellow:#f1c40f;--bg:#eef2ef;--card:#fff;--text:#173129;--muted:#687a72;--danger:#a52a2a}
+:root{--green:#0f3d2e;--green2:#17664b;--yellow:#f1c40f;--bg:#eef2ef;--card:#fff;--text:#173129;--muted:#687a72;--danger:#a52a2a;--note:#c62828}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
-body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:8px 16px;gap:12px}.top h1{font-size:18px;margin:0}.top small{opacity:.85}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:14px}.btn.primary{background:var(--yellow);color:#173129}.btn.secondary{background:#fff;color:var(--green);border:1px solid #cbd8d2}.btn.dark{background:#255a49;color:#fff}.btn.danger{background:#fff0f0;color:#8b1d1d;border:1px solid #e6b7b7}.btn.small{padding:7px 10px;font-size:12px}
-.layout{height:calc(100vh - 62px);display:flex;flex-direction:column}.bar{background:#fff;border-bottom:1px solid #d6dfda;padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.bar .grow{flex:1}.status{font-size:13px;color:#64766e}.error{background:#ffe8e8;color:#8b1d1d;padding:10px 14px;display:none}
+body{overflow:hidden;display:flex;flex-direction:column;height:100vh;height:100dvh}.top{flex:none;min-height:62px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:8px 16px;gap:12px}.top h1{font-size:18px;margin:0}.top small{opacity:.85}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:14px}.btn i{font-style:normal}.btn.primary{background:var(--yellow);color:#173129}.btn.secondary{background:#fff;color:var(--green);border:1px solid #cbd8d2}.btn.dark{background:#255a49;color:#fff}.btn.danger{background:#fff0f0;color:#8b1d1d;border:1px solid #e6b7b7}.btn.small{padding:7px 10px;font-size:12px}.btn.save{background:#2ecc71;color:#06301f}.btn.on{outline:3px solid var(--yellow);outline-offset:-3px}.btn:disabled{opacity:.6;cursor:default}
+.short{display:none}#moreBtn{display:none}
+.layout{flex:1;min-height:0;display:flex;flex-direction:column}.bar{background:#fff;border-bottom:1px solid #d6dfda;padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.bar .grow{flex:1}.status{font-size:13px;color:#64766e}.error{background:#ffe8e8;color:#8b1d1d;padding:10px 14px;display:none}
 .viewer-wrap{position:relative;flex:1;min-height:0;overflow:hidden}.pdfViewerContainer{position:absolute;inset:0;overflow:hidden;background:#69736f}.pdfViewerPane{position:absolute;inset:0;overflow:auto;background:#69736f;display:none}.pdfViewerPane.active{display:block}.pdfViewer{padding-bottom:30px}.page{margin:16px auto!important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-.bottom{background:#fff;border-top:1px solid #d6dfda;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.bottom .grow{flex:1}
+.fzoom{position:absolute;right:10px;bottom:10px;z-index:6;display:none;flex-direction:column;gap:6px}.fzoom button{width:44px;height:44px;border-radius:12px;border:1px solid #cbd8d2;background:rgba(255,255,255,.95);color:var(--green);font:700 20px Arial;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.noteHint{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:7;background:var(--yellow);color:#173129;font-weight:700;font-size:14px;padding:8px 10px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;width:max-content;max-width:calc(100% - 20px)}.noteHint[hidden]{display:none}.noteHint button{border:0;border-radius:8px;background:#fff;color:var(--green);font-weight:700;padding:6px 10px}
+.noting .annotationLayer{pointer-events:none}.noting .page{cursor:crosshair}
+.noteLayer{position:absolute;inset:0;pointer-events:none;z-index:5}.note{position:absolute;pointer-events:auto;background:#fff;border:1.5px solid var(--note);color:var(--note);border-radius:3px;font-family:Arial,sans-serif;font-weight:700;line-height:1.2;white-space:pre;touch-action:none;cursor:move;user-select:none;-webkit-user-select:none}.note.sel{outline:3px solid #1d63d8;outline-offset:2px}
+.bottom{flex:none;background:#fff;border-top:1px solid #d6dfda;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.bottom .grow{flex:1}
 .panel{position:fixed;right:14px;bottom:70px;width:min(460px,calc(100vw - 28px));max-height:60vh;overflow:auto;background:#fff;border:1px solid #d6dfda;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.22);padding:14px;z-index:20;display:none}.panel.open{display:block}.panel h3{margin:0 0 10px;font-size:16px}
 .photo-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}.photo-item{position:relative;border:1px solid #d6dfda;border-radius:9px;overflow:hidden;background:#f6f8f7}.photo-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}.photo-item input{width:100%;border:0;border-top:1px solid #d6dfda;padding:8px;font-size:13px}.photo-item button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;width:28px;height:28px;background:#fff;color:#8b1d1d;font-weight:700;cursor:pointer}
 .empty{color:var(--muted);font-size:13px;padding:6px 0}
@@ -22,10 +27,12 @@ body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;dis
 .annotationLayer .textWidgetAnnotation input,.annotationLayer .textWidgetAnnotation textarea{text-align:center!important}
 .overlay{position:fixed;inset:0;z-index:9000;background:rgba(10,30,22,.55);display:flex;align-items:center;justify-content:center;padding:16px}.overlay[hidden]{display:none}
 .dialog{background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);padding:18px;width:min(520px,100%);max-height:90vh;overflow:auto;display:grid;gap:12px}.dialog h2{margin:0;font-size:18px;color:var(--green)}.dialog p{margin:0;font-size:14px;line-height:1.45}.dialog .row{display:flex;gap:8px;flex-wrap:wrap}.dialog .row .btn{flex:1;min-height:46px}
+.menu .btn{min-height:48px;text-align:left;font-size:15px}
 .steps{margin:0;padding-left:22px;display:grid;gap:8px;font-size:14px;line-height:1.45}.path{display:inline-block;font-family:Consolas,monospace;background:#eef4f1;border:1px solid #cbd8d2;border-radius:6px;padding:2px 6px;font-weight:700;overflow-wrap:anywhere}
-#fieldSheet{position:fixed;left:0;right:0;bottom:0;z-index:9500;background:#fff;border-top:1px solid #cbd8d2;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding:12px 12px calc(12px + env(safe-area-inset-bottom));display:grid;gap:10px}#fieldSheet[hidden]{display:none}
+#fieldSheet,#noteSheet{position:fixed;left:0;right:0;bottom:0;z-index:9500;background:#fff;border-top:1px solid #cbd8d2;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding:12px 12px calc(12px + env(safe-area-inset-bottom));display:grid;gap:10px}#fieldSheet[hidden],#noteSheet[hidden]{display:none}
 .fs-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.fs-head b{font-size:16px;color:var(--green)}.fs-head span{font-size:12px;color:var(--muted)}
 #fsInput{width:100%;font-size:22px;padding:12px;border:2px solid #17664b;border-radius:12px;text-align:center}
+#noteInput{width:100%;font:700 18px Arial,sans-serif;padding:10px 12px;border:2px solid var(--note);border-radius:12px;color:var(--note);resize:vertical;min-height:70px}
 .fs-nav{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.fs-nav .btn{min-height:48px}
 #pdfSheet{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;justify-content:center;padding:10px}
 #pdfSheet[hidden]{display:none}
@@ -38,14 +45,25 @@ body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;dis
 .pdf-sheet-msg{font-size:12px;color:#8a4b00}
 .pdf-sheet-msg:empty{display:none}
 .pdf-sheet-close,.pdf-sheet-where{border:0;background:none;color:#376454;font-weight:700;min-height:36px;cursor:pointer}
+body:not(.embed) #saveSuivi{display:none}body.embed #newBtn,body.embed [data-m=newBtn]{display:none}
 @media(max-width:900px){.pan-head{width:100%}}
-@media(max-width:650px){.top{min-height:58px;padding:8px 10px;align-items:flex-start}.top h1{font-size:15px}.top small{display:block;margin-top:2px}.actions .btn{padding:9px 10px;font-size:12px}.bar{font-size:12px;padding:7px 10px}.page{margin:8px auto!important}.bottom{padding:8px}.bottom .btn{font-size:12px;padding:9px 10px}.bottom .grow{flex-basis:100%;height:0}}
+@media(max-width:650px){
+ .top{min-height:0;padding:6px 8px;gap:8px}.top h1{font-size:16px;white-space:nowrap}.top small{display:none}.long{display:none}.short{display:inline}
+ .zbtn{display:none}.fzoom{display:flex}.actions{flex-wrap:nowrap;gap:6px}.actions .btn{padding:10px 10px;font-size:13px;min-height:42px}
+ .bar{padding:6px 8px;gap:6px;font-size:12px}.bar .grow,.pan-tools{display:none}.pan-head{flex-wrap:nowrap;gap:8px}.pan-head strong{white-space:nowrap}.pan-head .status{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+ .pan-list{flex-wrap:nowrap;overflow-x:auto;width:100%;scrollbar-width:none;padding-bottom:2px}.pan-list::-webkit-scrollbar{display:none}.pan-pill{flex:none;white-space:nowrap;padding:8px 12px}
+ .page{margin:8px auto!important}
+ .bottom{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}.bottom .grow,#whereBtn,#newBtn{display:none}#moreBtn{display:flex}
+ .bottom .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 2px;font-size:11px;min-height:52px;line-height:1.1}.bottom .btn i{font-size:19px}
+ #bottomStatus{grid-column:1/-1;font-size:11px;text-align:center}#bottomStatus:empty{display:none}
+ .panel{bottom:auto;top:56px;max-height:calc(100dvh - 140px)}
+}
 </style>
 </head>
 <body>
 <header class="top">
-  <div><h1>📐 Prise de cotes — rénovation toiture</h1><small>Les cotes sont enregistrées sur ce téléphone jusqu'à l'export</small></div>
-  <div class="actions"><button class="btn secondary" id="zoomOut" aria-label="Dézoomer">−</button><button class="btn secondary" id="zoomReset">Adapter</button><button class="btn secondary" id="zoomIn" aria-label="Zoomer">+</button><button class="btn primary" id="download">📄 Exporter le PDF</button></div>
+  <div><h1>📐 <span class="long">Prise de cotes — rénovation toiture</span><span class="short">Prise de cotes</span></h1><small id="topSub">Les cotes sont enregistrées sur ce téléphone jusqu'à l'export</small></div>
+  <div class="actions"><button class="btn secondary zbtn" id="zoomOut" aria-label="Dézoomer">−</button><button class="btn secondary zbtn" id="zoomReset">Adapter</button><button class="btn secondary zbtn" id="zoomIn" aria-label="Zoomer">+</button><button class="btn save" id="saveSuivi">💾 <span class="long">Enregistrer dans le suivi</span><span class="short">Enregistrer</span></button><button class="btn primary" id="download">📄 <span class="long">Exporter le </span>PDF</button></div>
 </header>
 <div class="layout">
   <div class="bar">
@@ -55,12 +73,16 @@ body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;dis
     <div class="pan-tools"><button class="btn secondary small" id="renamePan">✏️ Renommer</button><button class="btn secondary small" id="duplicatePan">⧉ Dupliquer</button><button class="btn danger small" id="deletePan">🗑️ Supprimer</button></div>
   </div>
   <div class="error" id="error"></div>
-  <div class="viewer-wrap"><div id="loading" class="loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;background:#59635f;z-index:5">Chargement de la trame…</div><div id="viewerContainer" class="pdfViewerContainer"><div id="viewer" class="pdfViewer"></div></div></div>
+  <div class="viewer-wrap"><div id="loading" class="loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;background:#59635f;z-index:8">Chargement de la trame…</div><div id="viewerContainer" class="pdfViewerContainer"><div id="viewer" class="pdfViewer"></div></div>
+    <div class="noteHint" id="noteHint" hidden><span>👆 Touche le plan là où tu veux écrire</span><button type="button" id="noteCancel">Annuler</button></div>
+    <div class="fzoom"><button type="button" id="fzIn" aria-label="Zoomer">+</button><button type="button" id="fzOut" aria-label="Dézoomer">−</button><button type="button" id="fzFit" aria-label="Toute la page">⤢</button></div></div>
   <div class="bottom">
-    <button class="btn dark" id="addPan">＋ Ajouter un pan</button>
-    <button class="btn secondary" id="photosBtn">📷 Photos (<span id="photoCount">0</span>)</button>
-    <button class="btn secondary" id="whereBtn">📂 Où déposer le PDF</button>
-    <button class="btn secondary" id="newBtn">↺ Nouveau relevé</button>
+    <button class="btn dark" id="addPan"><i>＋</i> <span>Ajouter un pan</span></button>
+    <button class="btn secondary" id="noteBtn"><i>📝</i> <span>Annotation</span></button>
+    <button class="btn secondary" id="photosBtn"><i>📷</i> <span>Photos (<span id="photoCount">0</span>)</span></button>
+    <button class="btn secondary" id="whereBtn"><i>📂</i> <span>Où déposer le PDF</span></button>
+    <button class="btn secondary" id="newBtn"><i>↺</i> <span>Nouveau relevé</span></button>
+    <button class="btn secondary" id="moreBtn"><i>⋯</i> <span>Plus</span></button>
     <div class="grow"></div><span class="status" id="bottomStatus"></span>
   </div>
 </div>
@@ -76,13 +98,16 @@ body{overflow:hidden}.top{min-height:62px;background:var(--green);color:#fff;dis
   <ol class="steps"><li>Ouvre l'explorateur de fichiers et va dans :<br><span class="path" id="wherePath">W:\Business\Triangle energie\AFFAIRES</span></li><li>Ouvre le dossier du client.</li><li>Crée un dossier nommé :<br><span class="path">11 - PRISE DE COTE</span></li><li>Dépose-y le PDF de la prise de cotes.</li><li>Envoie un mail à BE Réno Énergie et à Sécurité Énergie avec le lien du dossier.</li></ol>
   <p class="status" id="whereMsg"></p>
   <div class="row"><button class="btn secondary" id="copyPath">📋 Copier le chemin</button><button class="btn primary" id="whereClose">Fermer</button></div></div></div>
-<div id="fieldSheet" hidden><div class="fs-head"><b id="fsLabel"></b><span id="fsPos"></span></div><input id="fsInput" autocomplete="off" enterkeyhint="next"><div class="fs-nav"><button class="btn secondary" id="fsPrev">◀ Précédent</button><button class="btn primary" id="fsOk">✓ OK</button><button class="btn secondary" id="fsNext">Suivant ▶</button></div></div>
+<div class="overlay" id="moreDialog" hidden><div class="dialog menu" role="dialog" aria-modal="true" aria-labelledby="moreTitle"><h2 id="moreTitle">Plus d'actions</h2>
+  <button class="btn secondary" type="button" data-m="renamePan">✏️ Renommer le pan</button><button class="btn secondary" type="button" data-m="duplicatePan">⧉ Dupliquer le pan</button><button class="btn danger" type="button" data-m="deletePan">🗑️ Supprimer le pan</button><button class="btn secondary" type="button" data-m="whereBtn">📂 Où déposer le PDF</button><button class="btn secondary" type="button" data-m="newBtn">↺ Nouveau relevé</button>
+  <button class="btn primary" type="button" id="moreClose" style="text-align:center">Fermer</button></div></div>
+<div id="fieldSheet" hidden><div class="fs-head"><b id="fsLabel"></b><span id="fsPos"></span></div><input id="fsInput" type="text" inputmode="text" autocomplete="off" enterkeyhint="next"><div class="fs-nav"><button class="btn secondary" id="fsPrev">◀ Précédent</button><button class="btn primary" id="fsOk">✓ OK</button><button class="btn secondary" id="fsNext">Suivant ▶</button></div></div>
+<div id="noteSheet" hidden><div class="fs-head"><b>📝 Annotation</b><span>Fais glisser l'annotation sur le plan pour la déplacer</span></div><textarea id="noteInput" rows="2" placeholder="Écris ton annotation" autocomplete="off"></textarea><div class="fs-nav"><button class="btn danger" id="noteDel">🗑 Supprimer</button><button class="btn primary" id="noteOk" style="grid-column:span 2">✓ OK</button></div></div>
 <script>
 (function(){
 'use strict';
 const BASE='trame.pdf';
 const GENERAL=['Date','Client','Affaire','Intervenant'];
-const NUMERIC=/^([a-k]|x[1-6]|\d{1,2}|Long couverture|Hauteur faitage|Base goute 1|Base goute 2|Largeur pignon|Longueur long pan|Rampant|Axe faitage|Avant faitiere|Qte travee|Largeur travee)$/;
 const TOUCH=window.matchMedia('(hover:none) and (pointer:coarse)').matches;
 const loading=document.getElementById('loading'), error=document.getElementById('error'), status=document.getElementById('status'), bottomStatus=document.getElementById('bottomStatus');
 const panTitle=document.getElementById('panTitle'), panList=document.getElementById('panList');
@@ -90,12 +115,23 @@ let baseBytes=null, currentPan=0, pans=[], photos=[], started=false;
 const params=new URLSearchParams(location.search);
 const prefill={Affaire:params.get('affaire')||'',Client:params.get('client')||'',Date:params.get('date')||'',Intervenant:params.get('intervenant')||''};
 const hasPrefill=Object.values(prefill).some(Boolean);
+// Ouvert depuis un point de contrôle de Suivi Chantier (?embed=1) : le relevé est enregistré dans le suivi.
+const EMBED=params.get('embed')==='1';
 function fail(msg){loading.style.display='none';error.style.display='block';error.textContent=msg;status.textContent='Erreur';}
-function newPanState(name,bytes){return {name,bytes,viewer:null,pdfDoc:null,eventBus:null,linkService:null,container:null,ready:false,userZoom:false};}
+function newId(){return Math.random().toString(36).slice(2,10);}
+function newPanState(name,bytes,notes){return {name,bytes,notes:notes||[],viewer:null,pdfDoc:null,eventBus:null,linkService:null,container:null,ready:false,userZoom:false};}
 function helpText(){return TOUCH?'Touche une case pour la remplir.':'Clique dans une case pour la remplir.';}
 
+// ---------- Lien avec Suivi Chantier ----------
+let dirty=false,parentOrigin='',pendingSave=null;
+function parentOk(o){return /^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.googleusercontent\.com$/.test(o)||o==='https://script.google.com'||/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(o);}
+function toParent(m){if(!parentOrigin)return;try{window.parent.postMessage(Object.assign({sc:'tool',tool:'cotes'},m),parentOrigin);}catch(e){}}
+function setDirty(v){if(dirty===v)return;dirty=v;toParent({type:'dirty',value:v});}
+function changed(){if(!started)return;setDirty(true);schedulePersist();}
+window.addEventListener('message',e=>{if(!parentOrigin||e.source!==window.parent||e.origin!==parentOrigin)return;const d=e.data||{};if(d.sc!=='suivi'||!pendingSave)return;if(d.type==='saved')pendingSave.ok();if(d.type==='error')pendingSave.ko(new Error(d.message||'erreur inconnue'));});
+
 // ---------- Sauvegarde automatique sur l'appareil (IndexedDB) ----------
-const DB='prise_cotes_toiture',STORE='kv',KEY='releve';
+const DB='prise_cotes_toiture',STORE='kv',KEY=EMBED?('suivi|'+prefill.Affaire+'|'+(params.get('k')||'')):'releve';
 function idb(){return new Promise((ok,ko)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE);r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error);});}
 async function idbGet(){try{const db=await idb();return await new Promise(ok=>{const t=db.transaction(STORE).objectStore(STORE).get(KEY);t.onsuccess=()=>ok(t.result||null);t.onerror=()=>ok(null);});}catch(e){return null;}}
 async function idbSet(v){const db=await idb();return new Promise((ok,ko)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(v,KEY);tx.oncomplete=()=>ok();tx.onerror=()=>ko(tx.error);});}
@@ -103,9 +139,9 @@ async function idbDel(){try{const db=await idb();await new Promise(ok=>{const tx
 let persistTimer=null;
 function schedulePersist(){if(!started)return;clearTimeout(persistTimer);persistTimer=setTimeout(persistNow,1200);}
 async function persistNow(){if(!started)return;clearTimeout(persistTimer);try{const st=pans[currentPan];if(st&&st.pdfDoc)await savePanAt(currentPan);
-  await idbSet({v:1,savedAt:Date.now(),current:currentPan,pans:pans.map(p=>({name:p.name,bytes:p.bytes})),photos:photos.map(p=>({blob:p.blob,caption:p.caption||'',name:p.name||''}))});
-  bottomStatus.textContent='✓ Enregistré sur ce téléphone à '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
- }catch(e){console.warn(e);bottomStatus.textContent='⚠ Sauvegarde sur le téléphone impossible : exporte le PDF avant de fermer.';}}
+  await idbSet({v:1,savedAt:Date.now(),dirty,current:currentPan,pans:pans.map(p=>({name:p.name,bytes:p.bytes,notes:cleanNotes(p.notes)})),photos:photos.map(p=>({blob:p.blob,caption:p.caption||'',name:p.name||''}))});
+  bottomStatus.textContent='✓ Enregistré sur cet appareil à '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+(EMBED&&dirty?' — pas encore dans le suivi':'');
+ }catch(e){console.warn(e);bottomStatus.textContent='⚠ Sauvegarde sur l’appareil impossible : '+(EMBED?'enregistre dans le suivi':'exporte le PDF')+' avant de fermer.';}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persistNow();});
 
 // ---------- Trame : texte centré, infos générales ----------
@@ -113,17 +149,20 @@ async function loadBase(){const resp=await fetch(BASE,{cache:'no-store'});if(!re
 async function centerFields(bytes){try{const doc=await PDFLib.PDFDocument.load(bytes);fieldOrder=doc.getForm().getFields().map(f=>f.getName());doc.getForm().getFields().forEach(f=>{try{if(f.setAlignment)f.setAlignment(PDFLib.TextAlignment.Center);}catch(e){}});return new Uint8Array(await doc.save());}catch(e){console.warn('centrage',e);return bytes;}}
 async function readGeneral(bytes){const out={};try{const form=(await PDFLib.PDFDocument.load(bytes)).getForm();GENERAL.forEach(n=>{try{out[n]=form.getTextField(n).getText()||'';}catch(e){}});}catch(e){}return out;}
 async function fillGeneral(bytes,values){const doc=await PDFLib.PDFDocument.load(bytes);const form=doc.getForm();GENERAL.forEach(n=>{const v=String(values[n]||'').trim();if(!v)return;try{form.getTextField(n).setText(v);}catch(e){}});return new Uint8Array(await doc.save());}
+// Toutes les cases remplies d'un pan (texte libre, chiffres ou lettres) <-> trame vierge.
+async function readFields(bytes){const out={};const form=(await PDFLib.PDFDocument.load(bytes)).getForm();form.getFields().forEach(f=>{try{if(f instanceof PDFLib.PDFTextField){const v=f.getText();if(v)out[f.getName()]=v;}}catch(e){}});return out;}
+async function applyFields(bytes,fields){const doc=await PDFLib.PDFDocument.load(bytes);const form=doc.getForm();Object.keys(fields||{}).forEach(n=>{try{form.getTextField(n).setText(String(fields[n]));}catch(e){}});return new Uint8Array(await doc.save());}
 async function pan1Bytes(){const p=pans[0];if(p.pdfDoc)await savePanAt(0);return p.bytes||baseBytes;}
 
 // ---------- Visionneuse ----------
 function updatePanUi(){
   const p=pans[currentPan];panTitle.textContent=(p?.name||'Pan')+' ('+(currentPan+1)+'/'+pans.length+')';
   panList.innerHTML='';
-  pans.forEach((pp,i)=>{const b=document.createElement('button');b.className='pan-pill'+(i===currentPan?' active':'');b.textContent=pp.name;b.onclick=()=>switchPan(i);panList.appendChild(b);});
+  pans.forEach((pp,i)=>{const b=document.createElement('button');b.className='pan-pill'+(i===currentPan?' active':'');b.textContent=pp.name;b.onclick=()=>switchPan(i);panList.appendChild(b);if(i===currentPan)setTimeout(()=>{try{b.scrollIntoView({block:'nearest',inline:'nearest'});}catch(e){}},0);});
   document.getElementById('deletePan').disabled=false;
 }
 function showPan(i){pans.forEach((p,idx)=>{if(p.container)p.container.classList.toggle('active',idx===i);});}
-function fitPage(st){if(st&&st.viewer){try{st.viewer.currentScaleValue='page-fit';}catch(e){}}}
+function fitPage(st){if(st&&st.viewer){try{st.viewer.currentScaleValue=window.innerWidth<=650?'page-width':'page-fit';}catch(e){}}}
 async function createPanViewer(i,bytes){
   if(!window.pdfjsLib||!window.pdfjsViewer)throw new Error('Le moteur PDF n’est pas disponible.');
   const state=pans[i];
@@ -134,22 +173,25 @@ async function createPanViewer(i,bytes){
   state.container=pane;state.eventBus=new pdfjsViewer.EventBus();state.linkService=new pdfjsViewer.PDFLinkService({eventBus:state.eventBus});
   state.viewer=new pdfjsViewer.PDFViewer({container:pane,eventBus:state.eventBus,linkService:state.linkService,renderInteractiveForms:true,removePageBorders:false,enableScripting:false});
   state.linkService.setViewer(state.viewer);
-  state.eventBus.on('pagesinit',()=>{fitPage(state);state.ready=true;if(i===currentPan){loading.style.display='none';status.textContent=helpText();}});
-  state.eventBus.on('pagesloaded',()=>{if(i===currentPan)loading.style.display='none';});
+  state.eventBus.on('pagesinit',()=>{fitPage(state);state.ready=true;if(state===pans[currentPan]){loading.style.display='none';status.textContent=helpText();}});
+  state.eventBus.on('pagesloaded',()=>{if(state===pans[currentPan])loading.style.display='none';});
+  state.eventBus.on('pagerendered',()=>renderNotes(state));
+  state.eventBus.on('scalechanging',()=>setTimeout(()=>renderNotes(state),0));
   const doc=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
   state.pdfDoc=doc;state.bytes=bytes.slice();state.linkService.setDocument(doc,null);state.viewer.setDocument(doc);showPan(i);
 }
 async function savePanAt(i){const state=pans[i];if(!state.pdfDoc)return state.bytes;const saved=await state.pdfDoc.saveDocument();state.bytes=new Uint8Array(saved);return state.bytes;}
 async function saveCurrentPan(){return savePanAt(currentPan);}
-async function switchPan(i){try{if(i===currentPan)return;closeSheet();await saveCurrentPan();currentPan=i;updatePanUi();loading.style.display='flex';await createPanViewer(i,pans[i].bytes||baseBytes);showPan(i);loading.style.display='none';status.textContent=helpText();schedulePersist();}catch(e){console.error(e);fail('Impossible de changer de pan : '+(e.message||e));}}
-async function addPanWith(bytes,name,at){const i=(at===undefined)?pans.length:at;pans.splice(i,0,newPanState(name,bytes));currentPan=i;updatePanUi();loading.style.display='flex';await createPanViewer(i,bytes);showPan(i);loading.style.display='none';status.textContent=helpText();await persistNow();}
-async function addPan(){try{closeSheet();await saveCurrentPan();const gen=await readGeneral(await pan1Bytes());const bytes=await fillGeneral(baseBytes,gen);await addPanWith(bytes,'Pan '+(pans.length+1));status.textContent='Nouveau pan prêt : date, client, affaire et intervenant repris du pan 1.';}catch(e){console.error(e);fail('Impossible d’ajouter un pan : '+(e.message||e));}}
-async function duplicatePan(){try{closeSheet();const bytes=await saveCurrentPan();const src=pans[currentPan];await addPanWith(new Uint8Array(bytes||baseBytes),src.name+' (copie)',currentPan+1);status.textContent='Pan dupliqué avec ses cotes.';}catch(e){console.error(e);fail('Impossible de dupliquer le pan : '+(e.message||e));}}
-function renamePan(){const p=pans[currentPan];const n=prompt('Nom du pan (ex. Pan Nord) :',p.name);if(n===null)return;const v=n.trim();if(!v)return;p.name=v.slice(0,40);updatePanUi();schedulePersist();}
-async function deletePan(){closeSheet();if(pans.length<2){alert('Il faut garder au moins un pan.');return;}const p=pans[currentPan];if(!confirm('Supprimer « '+p.name+' » et ses cotes ?'))return;
-  if(p.container)p.container.remove();if(p.pdfDoc)try{p.pdfDoc.destroy();}catch(e){}pans.splice(currentPan,1);currentPan=Math.max(0,currentPan-1);updatePanUi();loading.style.display='flex';await createPanViewer(currentPan,pans[currentPan].bytes||baseBytes);showPan(currentPan);loading.style.display='none';await persistNow();status.textContent='Pan supprimé.';}
+function closeAll(){closeSheet();closeNote();setNoteMode(false);}
+async function switchPan(i){try{if(i===currentPan)return;closeAll();await saveCurrentPan();currentPan=i;updatePanUi();loading.style.display='flex';await createPanViewer(i,pans[i].bytes||baseBytes);showPan(i);loading.style.display='none';status.textContent=helpText();schedulePersist();}catch(e){console.error(e);fail('Impossible de changer de pan : '+(e.message||e));}}
+async function addPanWith(bytes,name,at,notes){const i=(at===undefined)?pans.length:at;pans.splice(i,0,newPanState(name,bytes,notes));currentPan=i;updatePanUi();loading.style.display='flex';await createPanViewer(i,bytes);showPan(i);loading.style.display='none';status.textContent=helpText();setDirty(true);await persistNow();}
+async function addPan(){try{closeAll();await saveCurrentPan();const gen=await readGeneral(await pan1Bytes());const bytes=await fillGeneral(baseBytes,gen);await addPanWith(bytes,'Pan '+(pans.length+1));status.textContent='Nouveau pan prêt : date, client, affaire et intervenant repris du pan 1.';}catch(e){console.error(e);fail('Impossible d’ajouter un pan : '+(e.message||e));}}
+async function duplicatePan(){try{closeAll();const bytes=await saveCurrentPan();const src=pans[currentPan];await addPanWith(new Uint8Array(bytes||baseBytes),src.name+' (copie)',currentPan+1,cleanNotes(src.notes).map(n=>Object.assign(n,{id:newId()})));status.textContent='Pan dupliqué avec ses cotes et ses annotations.';}catch(e){console.error(e);fail('Impossible de dupliquer le pan : '+(e.message||e));}}
+function renamePan(){closeAll();const p=pans[currentPan];const n=prompt('Nom du pan (ex. Pan Nord) :',p.name);if(n===null)return;const v=n.trim();if(!v)return;p.name=v.slice(0,40);updatePanUi();changed();}
+async function deletePan(){closeAll();if(pans.length<2){alert('Il faut garder au moins un pan.');return;}const p=pans[currentPan];if(!confirm('Supprimer « '+p.name+' » et ses cotes ?'))return;
+  if(p.container)p.container.remove();if(p.pdfDoc)try{p.pdfDoc.destroy();}catch(e){}pans.splice(currentPan,1);currentPan=Math.max(0,currentPan-1);updatePanUi();loading.style.display='flex';await createPanViewer(currentPan,pans[currentPan].bytes||baseBytes);showPan(currentPan);loading.style.display='none';setDirty(true);await persistNow();status.textContent='Pan supprimé.';}
 
-// ---------- Saisie au doigt : grande zone en bas de l'écran ----------
+// ---------- Saisie au doigt : grande zone en bas de l'écran (clavier normal : lettres et chiffres) ----------
 const sheet=document.getElementById('fieldSheet'),fsInput=document.getElementById('fsInput'),fsLabel=document.getElementById('fsLabel'),fsPos=document.getElementById('fsPos');
 let sheetField=null;
 function fieldLabel(n){if(/^[a-k]$/.test(n))return 'Cote '+n;if(/^\d{1,2}$/.test(n))return 'Tableau annexe — ligne '+String.fromCharCode(64+Number(n));if(/^x[1-6]$/.test(n))return 'Section des pannes — '+n;const map={Date:'Date',Client:'Client',Affaire:'N° d’affaire',Intervenant:'Intervenant',Bat:'Bât.',Rampant:'Rampant',Plat:'Type de faîtage — Plat',Boudin:'Type de faîtage — Boudin','Ventilée':'Type de faîtage — Ventilée',Bois:'Type de pannes — Bois',Mince:'Type de pannes — Profil mince',Epais:'Type de pannes — Profil épais','Qte travee':'Filets de sous-face — Qté de travées','Largeur travee':'Filets de sous-face — Largeur de travée'};return map[n]||n;}
@@ -158,7 +200,7 @@ let fieldOrder=[];
 function currentFields(){const pane=pans[currentPan]?.container;if(!pane)return [];const rank=el=>{const i=fieldOrder.indexOf(el.name);return i<0?9999:i;};return [...pane.querySelectorAll('.annotationLayer input[type=text],.annotationLayer textarea')].map(el=>({el,k:rank(el),r:el.getBoundingClientRect()})).sort((a,b)=>a.k-b.k||(Math.abs(a.r.top-b.r.top)>6?a.r.top-b.r.top:a.r.left-b.r.left)).map(x=>x.el);}
 function pushValue(){if(!sheetField)return;sheetField.value=fsInput.value;sheetField.dispatchEvent(new Event('input',{bubbles:true}));}
 function commitField(){if(!sheetField)return;pushValue();sheetField.dispatchEvent(new Event('change',{bubbles:true}));sheetField.dispatchEvent(new FocusEvent('blur'));schedulePersist();}
-function openSheet(el){if(sheetField&&sheetField!==el)commitField();sheetField=el;const list=currentFields();const idx=list.indexOf(el);fsLabel.textContent=fieldLabel(el.name||'');fsPos.textContent=(idx+1)+' / '+list.length;fsInput.value=el.value||'';fsInput.inputMode=NUMERIC.test(el.name||'')?'decimal':'text';sheet.hidden=false;try{el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}setTimeout(()=>{fsInput.focus();fsInput.select();},30);}
+function openSheet(el){closeNote();if(sheetField&&sheetField!==el)commitField();sheetField=el;const list=currentFields();const idx=list.indexOf(el);fsLabel.textContent=fieldLabel(el.name||'');fsPos.textContent=(idx+1)+' / '+list.length;fsInput.value=el.value||'';sheet.hidden=false;try{el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}setTimeout(()=>{fsInput.focus();fsInput.select();},30);}
 function closeSheet(){if(!sheetField){sheet.hidden=true;return;}commitField();sheetField=null;sheet.hidden=true;fsInput.blur();}
 function moveSheet(d){const list=currentFields();const i=list.indexOf(sheetField);const next=list[i+d];if(next)openSheet(next);else closeSheet();}
 fsInput.addEventListener('input',pushValue);
@@ -166,16 +208,45 @@ fsInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();mo
 document.getElementById('fsPrev').onclick=()=>moveSheet(-1);document.getElementById('fsNext').onclick=()=>moveSheet(1);document.getElementById('fsOk').onclick=closeSheet;
 const vc=document.getElementById('viewerContainer');
 vc.addEventListener('focusin',e=>{const el=e.target;if(!TOUCH||!el.closest||!el.closest('.annotationLayer'))return;if(!(el.matches('input[type=text]')||el.tagName==='TEXTAREA'))return;el.blur();openSheet(el);},true);
-vc.addEventListener('input',schedulePersist);vc.addEventListener('change',schedulePersist);vc.addEventListener('focusout',schedulePersist);
+vc.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('.annotationLayer'))changed();});vc.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('.annotationLayer'))changed();});vc.addEventListener('focusout',schedulePersist);
+
+// ---------- Annotations : texte libre posé n'importe où sur le plan ----------
+// Position en points PDF (coin haut-gauche de l'étiquette) : identique à l'écran et dans le PDF exporté.
+const NOTE_PT=9,NOTE_PAD=2.5,NOTE_LH=1.2;
+const noteSheet=document.getElementById('noteSheet'),noteInput=document.getElementById('noteInput');
+let noteMode=false,noteEdit=null,noteDrag=null;
+function cleanNotes(a){return (Array.isArray(a)?a:[]).filter(n=>n&&isFinite(n.x)&&isFinite(n.y)&&String(n.text||'').trim()).map(n=>({id:String(n.id||newId()),p:Number(n.p)||0,x:+n.x,y:+n.y,text:String(n.text).slice(0,400)}));}
+function setNoteMode(on){noteMode=!!on;vc.classList.toggle('noting',noteMode);document.getElementById('noteHint').hidden=!noteMode;document.getElementById('noteBtn').classList.toggle('on',noteMode);}
+function renderNotes(st){if(!st||!st.viewer)return;const n=st.viewer.pagesCount||0;for(let p=0;p<n;p++){const pv=st.viewer.getPageView(p);if(!pv||!pv.div||!pv.viewport)continue;let layer=pv.div.querySelector('.noteLayer');if(!layer){layer=document.createElement('div');layer.className='noteLayer';pv.div.appendChild(layer);}layer.innerHTML='';const vp=pv.viewport;
+  (st.notes||[]).forEach(nt=>{if((nt.p||0)!==p)return;const [vx,vy]=vp.convertToViewportPoint(nt.x,nt.y);const el=document.createElement('div');el.className='note'+(noteEdit&&noteEdit.id===nt.id?' sel':'');el.style.left=vx+'px';el.style.top=vy+'px';el.style.fontSize=(NOTE_PT*vp.scale)+'px';el.style.padding=(NOTE_PAD*vp.scale)+'px';el.textContent=nt.text||' ';el.dataset.id=nt.id;layer.appendChild(el);});}}
+function findNote(id){const st=pans[currentPan];return st&&(st.notes||[]).find(n=>n.id===id);}
+function openNote(id){closeSheet();if(noteEdit&&noteEdit.id!==id)closeNote();const n=findNote(id);if(!n)return;noteEdit={id};noteInput.value=n.text||'';noteSheet.hidden=false;renderNotes(pans[currentPan]);setTimeout(()=>{noteInput.focus();},30);}
+function closeNote(){if(!noteEdit)return;const st=pans[currentPan],id=noteEdit.id;noteEdit=null;noteSheet.hidden=true;noteInput.blur();const i=(st.notes||[]).findIndex(n=>n.id===id);if(i>=0){st.notes[i].text=noteInput.value.replace(/\s+$/,'').slice(0,400);if(!st.notes[i].text.trim())st.notes.splice(i,1);}renderNotes(st);changed();}
+noteInput.addEventListener('input',()=>{if(!noteEdit)return;const n=findNote(noteEdit.id);if(n){n.text=noteInput.value;renderNotes(pans[currentPan]);}});
+document.getElementById('noteOk').onclick=closeNote;
+document.getElementById('noteDel').onclick=()=>{if(!noteEdit)return;const st=pans[currentPan],id=noteEdit.id;noteEdit=null;noteSheet.hidden=true;noteInput.blur();st.notes=(st.notes||[]).filter(n=>n.id!==id);renderNotes(st);changed();};
+document.getElementById('noteBtn').onclick=()=>{const on=!noteMode;closeAll();setNoteMode(on);};
+document.getElementById('noteCancel').onclick=()=>setNoteMode(false);
+function pagePoint(page,clientX,clientY){const st=pans[currentPan];const p=Number(page.dataset.pageNumber||1)-1;const pv=st.viewer.getPageView(p);const box=(page.querySelector('.canvasWrapper')||page).getBoundingClientRect();const [x,y]=pv.viewport.convertToPdfPoint(clientX-box.left,clientY-box.top);return {p,x,y};}
+vc.addEventListener('click',e=>{if(!noteMode)return;const page=e.target.closest('.page');if(!page)return;e.preventDefault();e.stopPropagation();const st=pans[currentPan];const pt=pagePoint(page,e.clientX,e.clientY);const n={id:newId(),p:pt.p,x:pt.x,y:pt.y,text:''};st.notes=st.notes||[];st.notes.push(n);setNoteMode(false);openNote(n.id);},true);
+// Toucher une annotation : la modifier ; la faire glisser : la déplacer.
+vc.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('.note');if(!el||noteMode)return;e.preventDefault();e.stopPropagation();noteDrag={el,id:el.dataset.id,x0:e.clientX,y0:e.clientY,l0:parseFloat(el.style.left),t0:parseFloat(el.style.top),moved:false,page:el.closest('.page')};try{el.setPointerCapture(e.pointerId);}catch(err){}},true);
+vc.addEventListener('pointermove',e=>{if(!noteDrag)return;const dx=e.clientX-noteDrag.x0,dy=e.clientY-noteDrag.y0;if(!noteDrag.moved&&Math.hypot(dx,dy)<6)return;noteDrag.moved=true;noteDrag.el.style.left=(noteDrag.l0+dx)+'px';noteDrag.el.style.top=(noteDrag.t0+dy)+'px';e.preventDefault();},true);
+function endNoteDrag(){if(!noteDrag)return;const d=noteDrag;noteDrag=null;if(!d.moved){openNote(d.id);return;}const st=pans[currentPan],n=findNote(d.id);if(n&&d.page){const p=Number(d.page.dataset.pageNumber||1)-1;const [x,y]=st.viewer.getPageView(p).viewport.convertToPdfPoint(parseFloat(d.el.style.left),parseFloat(d.el.style.top));n.x=x;n.y=y;}renderNotes(st);changed();}
+vc.addEventListener('pointerup',endNoteDrag,true);vc.addEventListener('pointercancel',endNoteDrag,true);
+function drawNotes(doc,page,notes,font){const red=PDFLib.rgb(0.776,0.157,0.157),lh=NOTE_PT*NOTE_LH;
+  notes.forEach(n=>{const lines=String(n.text||'').split('\n').map(winAnsi);if(!lines.join('').trim())return;const w=Math.max(...lines.map(l=>font.widthOfTextAtSize(l,NOTE_PT)))+2*NOTE_PAD,h=lines.length*lh+2*NOTE_PAD;
+   page.drawRectangle({x:n.x,y:n.y-h,width:w,height:h,color:PDFLib.rgb(1,1,1),borderColor:red,borderWidth:0.9});
+   lines.forEach((l,k)=>page.drawText(l,{x:n.x+NOTE_PAD,y:n.y-NOTE_PAD-k*lh-(lh-NOTE_PT)/2-NOTE_PT*0.78,size:NOTE_PT,font,color:red}));});}
 
 // ---------- Photos : allégées, avec légende ----------
 function compressImage(file){return new Promise((ok,ko)=>{const url=URL.createObjectURL(file);const img=new Image();img.onload=()=>{try{const max=1600,s=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*s));c.height=Math.max(1,Math.round(img.naturalHeight*s));c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);c.toBlob(b=>b?ok(b):ko(new Error('conversion')),'image/jpeg',0.8);}catch(e){URL.revokeObjectURL(url);ko(e);}};img.onerror=()=>{URL.revokeObjectURL(url);ko(new Error('Image illisible'));};img.src=url;});}
 function renderPhotos(){
   const list=document.getElementById('photoList');list.innerHTML='';document.getElementById('photoCount').textContent=photos.length;
   if(!photos.length){list.innerHTML='<div class="empty" style="grid-column:1/-1">Aucune photo.</div>';return;}
-  photos.forEach((p,i)=>{if(!p.url)p.url=URL.createObjectURL(p.blob);const d=document.createElement('div');d.className='photo-item';const img=document.createElement('img');img.src=p.url;img.alt='Photo '+(i+1);const cap=document.createElement('input');cap.placeholder='Légende (facultatif)';cap.value=p.caption||'';cap.maxLength=120;cap.oninput=()=>{p.caption=cap.value;schedulePersist();};const b=document.createElement('button');b.textContent='×';b.title='Retirer';b.setAttribute('aria-label','Retirer la photo');b.onclick=()=>{URL.revokeObjectURL(p.url);photos.splice(i,1);renderPhotos();schedulePersist();};d.append(img,cap,b);list.appendChild(d);});
+  photos.forEach((p,i)=>{if(!p.url)p.url=URL.createObjectURL(p.blob);const d=document.createElement('div');d.className='photo-item';const img=document.createElement('img');img.src=p.url;img.alt='Photo '+(i+1);const cap=document.createElement('input');cap.placeholder='Légende (facultatif)';cap.value=p.caption||'';cap.maxLength=120;cap.oninput=()=>{p.caption=cap.value;changed();};const b=document.createElement('button');b.textContent='×';b.title='Retirer';b.setAttribute('aria-label','Retirer la photo');b.onclick=()=>{URL.revokeObjectURL(p.url);photos.splice(i,1);renderPhotos();changed();};d.append(img,cap,b);list.appendChild(d);});
 }
-document.getElementById('photoInput').addEventListener('change',async e=>{const files=[...(e.target.files||[])];e.target.value='';let bad=0;for(const f of files){if(!/^image\//.test(f.type)){bad++;continue;}try{const blob=await compressImage(f);photos.push({blob,url:URL.createObjectURL(blob),caption:'',name:f.name});}catch(err){bad++;}}renderPhotos();schedulePersist();if(bad)alert(bad+' fichier(s) ignoré(s) : ce ne sont pas des photos lisibles.');});
+document.getElementById('photoInput').addEventListener('change',async e=>{const files=[...(e.target.files||[])];e.target.value='';let bad=0;for(const f of files){if(!/^image\//.test(f.type)){bad++;continue;}try{const blob=await compressImage(f);photos.push({blob,url:URL.createObjectURL(blob),caption:'',name:f.name});}catch(err){bad++;}}renderPhotos();changed();if(bad)alert(bad+' fichier(s) ignoré(s) : ce ne sont pas des photos lisibles.');});
 
 // ---------- Export ----------
 function cleanFilePart(value){return String(value||'').trim().replace(/[\\/:*?\"<>|]/g,'-').replace(/\s+/g,' ').replace(/^-+|-+$/g,'');}
@@ -190,9 +261,8 @@ function showPdfSheet(file){let el=document.getElementById('pdfSheet');if(!el){e
   el.querySelector('.pdf-sheet-name').textContent=file.name+' · '+(kb>1024?(kb/1024).toLocaleString('fr-FR',{maximumFractionDigits:1})+' Mo':kb+' ko');el.hidden=false;
   document.getElementById('pdfCloseBtn').onclick=()=>{el.hidden=true;};document.getElementById('pdfSaveBtn').onclick=()=>savePdfFile(file);document.getElementById('pdfWhereBtn').onclick=openWhere;
   document.getElementById('pdfShareBtn').onclick=async()=>{try{if(navigator.canShare&&!navigator.canShare({files:[file]}))throw new Error('fichiers');await navigator.share({files:[file],title:file.name.replace(/\.pdf$/,'')});}catch(e){if(e&&e.name==='AbortError')return;document.getElementById('pdfSheetMsg').textContent='Le partage n’est pas disponible ici : utilise « ⬇ Enregistrer ».';}};}
-async function exportPdf(){
-  try{
-    closeSheet();await saveCurrentPan();
+async function buildFinalPdf(){
+    closeAll();await saveCurrentPan();
     if(!window.PDFLib)throw new Error('PDF-lib n’est pas disponible.');
     status.textContent='Création du PDF final…';
     const gen=await readGeneral(await pan1Bytes());
@@ -212,6 +282,7 @@ async function exportPdf(){
        const title=winAnsi([gen.Affaire,gen.Client,ramp||(pans[i].name||('Pan '+(i+1)))].map(v=>String(v||'').trim()).filter(Boolean).join(' - '));
        pg0.drawRectangle({x:106,y:779,width:385,height:33,color:PDFLib.rgb(1,1,1)});let fs=20;while(fs>9&&tf.widthOfTextAtSize(title,fs)>378)fs-=0.5;
        pg0.drawText(title,{x:297.5-tf.widthOfTextAtSize(title,fs)/2,y:789,size:fs,font:tf,color:PDFLib.rgb(0,0,0)});}catch(e){console.warn('titre pan '+(i+1)+':',e);}
+      try{const notes=cleanNotes(pans[i].notes);if(notes.length){const nf=await src.embedFont(PDFLib.StandardFonts.HelveticaBold);src.getPages().forEach((pg,p)=>drawNotes(src,pg,notes.filter(n=>n.p===p),nf));}}catch(e){console.warn('annotations pan '+(i+1)+':',e);}
       const pages=await out.copyPages(src,src.getPageIndices());pages.forEach(pg=>out.addPage(pg));
     }
     const font=await out.embedFont(PDFLib.StandardFonts.Helvetica);
@@ -222,12 +293,29 @@ async function exportPdf(){
       const page=out.addPage([595,842]);const y=capH+(842-capH-h)/2;page.drawImage(img,{x:(595-w)/2,y,width:w,height:h});
       lines.forEach((l,k)=>{const tw=font.widthOfTextAtSize(l,12);page.drawText(l,{x:(595-tw)/2,y:capH-20-k*16,size:12,font,color:PDFLib.rgb(0.1,0.2,0.16)});});
     }
-    const finalBytes=await out.save();const name=buildExportName(await getExportIdentity());
-    const msg='PDF final prêt — '+pans.length+' pan(s)'+(photos.length?' + '+photos.length+' photo(s)':'')+'.';
-    if(canSharePdf()){showPdfSheet(new File([finalBytes],name,{type:'application/pdf'}));status.textContent=msg;return;}
-    savePdfFile(new File([finalBytes],name,{type:'application/pdf'}));status.textContent=msg+' Voir « 📂 Où déposer le PDF ».';
+    const bytes=await out.save();const name=buildExportName(await getExportIdentity());
+    return {bytes,name,summary:pans.length+' pan(s)'+(photos.length?' + '+photos.length+' photo(s)':'')};
+}
+async function exportPdf(){
+  try{
+    const r=await buildFinalPdf();const msg='PDF final prêt — '+r.summary+'.';
+    if(canSharePdf()){showPdfSheet(new File([r.bytes],r.name,{type:'application/pdf'}));status.textContent=msg;return;}
+    savePdfFile(new File([r.bytes],r.name,{type:'application/pdf'}));status.textContent=msg+' Voir « 📂 Où déposer le PDF ».';
   }catch(e){console.error(e);status.textContent='Erreur à l’export';alert('Le PDF final n’a pas pu être créé : '+(e.message||e));}
 }
+
+// ---------- Enregistrement dans le suivi (PDF + données modifiables) ----------
+function blobToDataUrl(b){return new Promise((ok,ko)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>ko(r.error);r.readAsDataURL(b);});}
+function dataUrlToBlob(u){const m=/^data:([^;]+);base64,(.*)$/.exec(String(u||''));if(!m)throw new Error('image');const s=atob(m[2]),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return new Blob([a],{type:m[1]});}
+async function buildData(){await saveCurrentPan();const out={v:1,tool:'cotes',savedAt:Date.now(),pans:[],photos:[]};
+  for(let i=0;i<pans.length;i++){const p=pans[i];const bytes=p.pdfDoc?await savePanAt(i):(p.bytes||baseBytes);out.pans.push({name:p.name,fields:await readFields(bytes),notes:cleanNotes(p.notes)});}
+  for(const p of photos)out.photos.push({data:await blobToDataUrl(p.blob),caption:p.caption||'',name:p.name||''});return out;}
+async function saveToSuivi(){const b=document.getElementById('saveSuivi');if(b.disabled)return;const old=b.innerHTML;b.disabled=true;b.textContent='⏳ Enregistrement…';
+  try{const pdf=await buildFinalPdf();const data=await buildData();status.textContent='Envoi dans le suivi…';
+   await new Promise((ok,ko)=>{pendingSave={ok,ko};toParent({type:'save',file:{name:pdf.name,blob:new Blob([pdf.bytes],{type:'application/pdf'})},data,summary:pdf.summary});setTimeout(()=>ko(new Error('le suivi ne répond pas')),180000);});
+   setDirty(false);await persistNow();status.textContent='✓ Prise de cotes enregistrée dans le suivi.';
+  }catch(e){console.error(e);status.textContent='⚠ Pas enregistré dans le suivi';alert('La prise de cotes n’a pas pu être enregistrée dans le suivi : '+(e.message||e)+'\nTes cotes restent sur cet appareil : réessaie.');}
+  finally{pendingSave=null;b.disabled=false;b.innerHTML=old;}}
 
 // ---------- Où déposer le PDF ----------
 function openWhere(){document.getElementById('whereMsg').textContent='';document.getElementById('whereDialog').hidden=false;}
@@ -242,22 +330,47 @@ document.getElementById('duplicatePan').onclick=duplicatePan;
 document.getElementById('renamePan').onclick=renamePan;
 document.getElementById('deletePan').onclick=deletePan;
 document.getElementById('download').onclick=exportPdf;
+document.getElementById('saveSuivi').onclick=saveToSuivi;
 function currentViewer(){return pans[currentPan]?.viewer||null;}
-document.getElementById('zoomIn').onclick=()=>{const v=currentViewer();if(v){v.currentScale=Math.min(v.currentScale+0.15,3);pans[currentPan].userZoom=true;}};
-document.getElementById('zoomOut').onclick=()=>{const v=currentViewer();if(v){v.currentScale=Math.max(v.currentScale-0.15,.3);pans[currentPan].userZoom=true;}};
-document.getElementById('zoomReset').onclick=()=>{const st=pans[currentPan];if(st){st.userZoom=false;fitPage(st);}};
+function zoomBy(d){const v=currentViewer();if(v){v.currentScale=Math.max(.3,Math.min(v.currentScale+d,4));pans[currentPan].userZoom=true;}}
+function zoomFit(){const st=pans[currentPan];if(st){st.userZoom=false;fitPage(st);}}
+document.getElementById('zoomIn').onclick=()=>zoomBy(0.15);document.getElementById('zoomOut').onclick=()=>zoomBy(-0.15);document.getElementById('zoomReset').onclick=zoomFit;
+document.getElementById('fzIn').onclick=()=>zoomBy(0.25);document.getElementById('fzOut').onclick=()=>zoomBy(-0.25);document.getElementById('fzFit').onclick=zoomFit;
 let resizeTimer=null;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{const st=pans[currentPan];if(st&&!st.userZoom)fitPage(st);},200);});
-document.getElementById('photosBtn').onclick=()=>document.getElementById('photoPanel').classList.toggle('open');
+document.getElementById('photosBtn').onclick=()=>{closeAll();document.getElementById('photoPanel').classList.toggle('open');};
 document.getElementById('closePhotos').onclick=()=>document.getElementById('photoPanel').classList.remove('open');
-document.getElementById('newBtn').onclick=async()=>{if(!confirm('Commencer un nouveau relevé ? Le relevé en cours sera effacé de ce téléphone (pense à l’exporter avant).'))return;started=false;clearTimeout(persistTimer);await idbDel();location.reload();};
+document.getElementById('newBtn').onclick=async()=>{if(!confirm('Commencer un nouveau relevé ? Le relevé en cours sera effacé de cet appareil (pense à l’exporter avant).'))return;started=false;clearTimeout(persistTimer);await idbDel();location.reload();};
+const moreDialog=document.getElementById('moreDialog');
+document.getElementById('moreBtn').onclick=()=>{closeAll();moreDialog.hidden=false;};
+document.getElementById('moreClose').onclick=()=>{moreDialog.hidden=true;};
+moreDialog.addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(e.target===moreDialog||b)moreDialog.hidden=true;if(b)document.getElementById(b.dataset.m).click();});
 
 // ---------- Démarrage ----------
-async function startNew(){pans=[];photos=[];const bytes=hasPrefill?await fillGeneral(baseBytes,prefill):baseBytes;pans.push(newPanState('Pan 1',bytes));currentPan=0;updatePanUi();renderPhotos();await createPanViewer(0,bytes);started=true;await persistNow();if(hasPrefill)status.textContent='Affaire, client, date et intervenant repris du suivi. '+helpText();}
-async function resume(saved){pans=saved.pans.map((p,i)=>newPanState(p.name||('Pan '+(i+1)),p.bytes?new Uint8Array(p.bytes):baseBytes));photos=(saved.photos||[]).filter(p=>p&&p.blob).map(p=>({blob:p.blob,caption:p.caption||'',name:p.name||''}));currentPan=Math.min(Math.max(0,saved.current||0),pans.length-1);updatePanUi();renderPhotos();await createPanViewer(currentPan,pans[currentPan].bytes);started=true;status.textContent='Relevé repris. '+helpText();bottomStatus.textContent='✓ Enregistré sur ce téléphone';}
+async function startNew(){pans=[];photos=[];const bytes=hasPrefill?await fillGeneral(baseBytes,prefill):baseBytes;pans.push(newPanState('Pan 1',bytes));currentPan=0;updatePanUi();renderPhotos();await createPanViewer(0,bytes);started=true;setDirty(false);await persistNow();if(hasPrefill)status.textContent='Affaire, client, date et intervenant repris du suivi. '+helpText();}
+async function resume(saved){pans=saved.pans.map((p,i)=>newPanState(p.name||('Pan '+(i+1)),p.bytes?new Uint8Array(p.bytes):baseBytes,cleanNotes(p.notes)));photos=(saved.photos||[]).filter(p=>p&&p.blob).map(p=>({blob:p.blob,caption:p.caption||'',name:p.name||''}));currentPan=Math.min(Math.max(0,saved.current||0),pans.length-1);updatePanUi();renderPhotos();await createPanViewer(currentPan,pans[currentPan].bytes);started=true;status.textContent='Relevé repris. '+helpText();bottomStatus.textContent='✓ Enregistré sur cet appareil';}
+async function fromData(d){pans=[];for(const p of d.pans){pans.push(newPanState(String(p.name||('Pan '+(pans.length+1))).slice(0,40),await applyFields(baseBytes,p.fields||{}),cleanNotes(p.notes)));}
+  photos=[];for(const p of (d.photos||[])){try{photos.push({blob:dataUrlToBlob(p.data),caption:String(p.caption||''),name:String(p.name||'')});}catch(e){}}
+  currentPan=0;updatePanUi();renderPhotos();await createPanViewer(0,pans[0].bytes);started=true;setDirty(false);await persistNow();status.textContent='Prise de cotes du suivi ouverte. '+helpText();}
 function askResume(saved,info){return new Promise(ok=>{const d=document.getElementById('resumeDialog');const when=new Date(saved.savedAt||Date.now());let t='Un relevé est enregistré sur ce téléphone'+(info.Affaire?' pour l’affaire '+info.Affaire:'')+(info.Client?' ('+info.Client+')':'')+' : '+saved.pans.length+' pan(s), '+(saved.photos||[]).length+' photo(s), le '+when.toLocaleDateString('fr-FR')+' à '+when.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'.';if(hasPrefill&&prefill.Affaire&&prefill.Affaire!==info.Affaire)t+=' Tu ouvres l’outil pour l’affaire '+prefill.Affaire+' : choisis « Nouveau relevé » pour la commencer (exporte d’abord l’ancien si besoin).';document.getElementById('resumeText').textContent=t;d.hidden=false;loading.style.display='none';document.getElementById('resumeYes').onclick=()=>{d.hidden=true;ok(true);};document.getElementById('resumeNo').onclick=()=>{if(!confirm('Le relevé enregistré sera effacé de ce téléphone. Continuer ?'))return;d.hidden=true;ok(false);};});}
+// Depuis le suivi : des modifications faites sur cet appareil mais pas encore enregistrées dans le suivi.
+function askDraft(saved){return new Promise(ok=>{const d=document.getElementById('resumeDialog');const when=new Date(saved.savedAt||Date.now());document.getElementById('resumeTitle').textContent='Modifications pas encore enregistrées';document.getElementById('resumeText').textContent='Le '+when.toLocaleDateString('fr-FR')+' à '+when.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+', cette prise de cotes a été modifiée sur cet appareil sans être enregistrée dans le suivi. Veux-tu reprendre ces modifications ?';document.getElementById('resumeYes').textContent='Reprendre mes modifications';document.getElementById('resumeNo').textContent='Non, ouvrir la version du suivi';d.hidden=false;loading.style.display='none';document.getElementById('resumeYes').onclick=()=>{d.hidden=true;ok(true);};document.getElementById('resumeNo').onclick=()=>{if(!confirm('Les modifications non enregistrées seront effacées de cet appareil. Continuer ?'))return;d.hidden=true;ok(false);};});}
+async function embedStart(){
+  document.body.classList.add('embed');document.getElementById('topSub').textContent='Relevé du suivi : touche « 💾 Enregistrer dans le suivi » quand tu as fini';status.textContent='Ouverture depuis le suivi…';
+  const msg=await new Promise(ok=>{let n=0;const ping=()=>{try{window.parent.postMessage({sc:'tool',tool:'cotes',type:'ready'},'*');}catch(e){}};const t=setInterval(()=>{if(++n>75){clearInterval(t);window.removeEventListener('message',h);ok({timeout:true});}else ping();},400);
+    function h(e){const d=e.data||{};if(e.source!==window.parent||!parentOk(e.origin)||d.sc!=='suivi'||d.type!=='load')return;parentOrigin=e.origin;clearInterval(t);window.removeEventListener('message',h);ok(d);}
+    window.addEventListener('message',h);ping();});
+  if(msg.timeout){fail('Le suivi ne répond pas : ferme puis rouvre la prise de cotes depuis le point de contrôle.');return;}
+  const server=msg.data&&Array.isArray(msg.data.pans)&&msg.data.pans.length?msg.data:null;
+  if(msg.error&&!server)alert('La prise de cotes enregistrée dans le suivi n’a pas pu être ouverte ('+msg.error+').');
+  const draft=await idbGet();
+  if(draft&&draft.dirty&&Array.isArray(draft.pans)&&draft.pans.length&&(!server||(draft.savedAt||0)>(server.savedAt||0))){const keep=await askDraft(draft);loading.style.display='flex';if(keep){await resume(draft);dirty=false;setDirty(true);return;}await idbDel();}
+  if(server){await fromData(server);return;}
+  await startNew();
+}
 (async function(){
   try{
     baseBytes=await centerFields(await loadBase());
+    if(EMBED){await embedStart();return;}
     const saved=await idbGet();
     if(saved&&Array.isArray(saved.pans)&&saved.pans.length){const info=await readGeneral(saved.pans[0].bytes?new Uint8Array(saved.pans[0].bytes):baseBytes);const keep=await askResume(saved,info);loading.style.display='flex';if(keep){await resume(saved);return;}await idbDel();}
     await startNew();
