@@ -432,10 +432,12 @@ async function buildFinalPdf(){
     for(const p of photos){
       const drawn=(p.marks||[]).length?await photoComposite(p,0):null;// photo avec ses dessins
       const img=await out.embedJpg(new Uint8Array(await (drawn?await new Promise(r=>drawn.toBlob(r,'image/jpeg',0.88)):p.blob).arrayBuffer()));
-      const cap=winAnsi(p.caption).trim();const lines=cap?wrapText(font,cap,12,535):[];const capH=lines.length?lines.length*16+20:0;
-      const maxW=555,maxH=802-capH;const dims=img.scale(1);const s=Math.min(maxW/dims.width,maxH/dims.height,1);const w=dims.width*s,h=dims.height*s;
-      const page=out.addPage([595,842]);const y=capH+(842-capH-h)/2;page.drawImage(img,{x:(595-w)/2,y,width:w,height:h});
-      lines.forEach((l,k)=>{const tw=font.widthOfTextAtSize(l,12);page.drawText(l,{x:(595-tw)/2,y:capH-20-k*16,size:12,font,color:PDFLib.rgb(0.1,0.2,0.16)});});
+      // photo en paysage → page A4 en paysage (photo plus grande)
+      const dims=img.scale(1);const land=dims.width>dims.height;const PW=land?842:595,PH=land?595:842;
+      const cap=winAnsi(p.caption).trim();const lines=cap?wrapText(font,cap,12,PW-60):[];const capH=lines.length?lines.length*16+20:0;
+      const maxW=PW-40,maxH=PH-40-capH;const s=Math.min(maxW/dims.width,maxH/dims.height,1);const w=dims.width*s,h=dims.height*s;
+      const page=out.addPage([PW,PH]);const y=capH+(PH-capH-h)/2;page.drawImage(img,{x:(PW-w)/2,y,width:w,height:h});
+      lines.forEach((l,k)=>{const tw=font.widthOfTextAtSize(l,12);page.drawText(l,{x:(PW-tw)/2,y:capH-20-k*16,size:12,font,color:PDFLib.rgb(0.1,0.2,0.16)});});
     }
     const bytes=await out.save();const name=buildExportName(await getExportIdentity());
     return {bytes,name,summary:pans.length+' pan(s)'+(photos.length?' + '+photos.length+' photo(s)':'')};
