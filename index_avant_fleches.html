@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prise de cotes — rénovation toiture</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<style>
+:root{--green:#0f3d2e;--green2:#17664b;--yellow:#f1c40f;--bg:#eef2ef;--card:#fff;--text:#173129;--muted:#687a72;--danger:#a52a2a;--note:#c62828}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{overflow:hidden;display:flex;flex-direction:column;height:100vh;height:100dvh}.top{flex:none;min-height:62px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:8px 16px;gap:12px}.top h1{font-size:18px;margin:0}.top small{opacity:.85}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:14px}.btn i{font-style:normal}.btn.primary{background:var(--yellow);color:#173129}.btn.secondary{background:#fff;color:var(--green);border:1px solid #cbd8d2}.btn.dark{background:#255a49;color:#fff}.btn.danger{background:#fff0f0;color:#8b1d1d;border:1px solid #e6b7b7}.btn.small{padding:7px 10px;font-size:12px}.btn.save{background:#2ecc71;color:#06301f}.btn.on{outline:3px solid var(--yellow);outline-offset:-3px}.btn:disabled{opacity:.6;cursor:default}
+.short{display:none}#moreBtn{display:none}
+.layout{flex:1;min-height:0;display:flex;flex-direction:column}.bar{background:#fff;border-bottom:1px solid #d6dfda;padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.bar .grow{flex:1}.status{font-size:13px;color:#64766e}.error{background:#ffe8e8;color:#8b1d1d;padding:10px 14px;display:none}
+.viewer-wrap{position:relative;flex:1;min-height:0;overflow:hidden}.pdfViewerContainer{position:absolute;inset:0;overflow:hidden;background:#69736f}.pdfViewerPane{position:absolute;inset:0;overflow:auto;background:#69736f;display:none}.pdfViewerPane.active{display:block}.pdfViewer{padding-bottom:30px}.page{margin:16px auto!important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.fzoom{position:absolute;right:10px;bottom:10px;z-index:6;display:none;flex-direction:column;gap:6px}
+@media (hover:none) and (pointer:coarse){.annotationLayer .textWidgetAnnotation input,.annotationLayer .textWidgetAnnotation textarea{outline:1px solid rgba(29,99,216,.45)!important;outline-offset:0;background-color:rgba(29,99,216,.07)!important}
+ /* boutons de zoom en ligne, sous la fiche (ils ne cachent plus de case) + place pour remonter la fiche quand on zoome */
+ .fzoom{flex-direction:row!important}#viewer::after{content:"";display:block;height:90px}}.fzoom button{width:44px;height:44px;border-radius:12px;border:1px solid #cbd8d2;background:rgba(255,255,255,.95);color:var(--green);font:700 20px Arial;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.noteHint{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:7;background:var(--yellow);color:#173129;font-weight:700;font-size:14px;padding:8px 10px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;width:max-content;max-width:calc(100% - 20px)}.noteHint[hidden]{display:none}.noteHint button{border:0;border-radius:8px;background:#fff;color:var(--green);font-weight:700;padding:6px 10px}
+.noting .annotationLayer{pointer-events:none}.noting .page{cursor:crosshair}
+.noteLayer{position:absolute;inset:0;pointer-events:none;z-index:5}.note{position:absolute;pointer-events:auto;background:#fff;border:1.5px solid var(--note);color:var(--note);border-radius:3px;font-family:Arial,sans-serif;font-weight:700;line-height:1.2;white-space:pre;touch-action:none;cursor:move;user-select:none;-webkit-user-select:none}.note.sel{outline:3px solid #1d63d8;outline-offset:2px}
+.bottom{flex:none;background:#fff;border-top:1px solid #d6dfda;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.bottom .grow{flex:1}
+.panel{position:fixed;right:14px;bottom:70px;width:min(460px,calc(100vw - 28px));max-height:60vh;overflow:auto;background:#fff;border:1px solid #d6dfda;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.22);padding:14px;z-index:20;display:none}.panel.open{display:block}.panel h3{margin:0 0 10px;font-size:16px}
+.photo-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}.photo-item{position:relative;border:1px solid #d6dfda;border-radius:9px;overflow:hidden;background:#f6f8f7}.photo-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}.photo-item input{width:100%;border:0;border-top:1px solid #d6dfda;padding:8px;font-size:13px}.photo-item button{position:absolute;right:4px;top:4px;border:0;border-radius:50%;width:28px;height:28px;background:#fff;color:#8b1d1d;font-weight:700;cursor:pointer}
+.empty{color:var(--muted);font-size:13px;padding:6px 0}
+.pan-list{display:flex;gap:6px;flex-wrap:wrap}.pan-pill{border:1px solid #cbd8d2;background:#f5f8f6;border-radius:18px;padding:6px 10px;font-size:13px;cursor:pointer}.pan-pill.active{background:var(--green);color:#fff;border-color:var(--green)}.pan-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pan-tools{display:flex;gap:6px;flex-wrap:wrap}
+.annotationLayer .textWidgetAnnotation input,.annotationLayer .textWidgetAnnotation textarea{text-align:center!important}
+.overlay{position:fixed;inset:0;z-index:9000;background:rgba(10,30,22,.55);display:flex;align-items:center;justify-content:center;padding:16px}.overlay[hidden]{display:none}
+.dialog{background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.3);padding:18px;width:min(520px,100%);max-height:90vh;overflow:auto;display:grid;gap:12px}.dialog h2{margin:0;font-size:18px;color:var(--green)}.dialog p{margin:0;font-size:14px;line-height:1.45}.dialog .row{display:flex;gap:8px;flex-wrap:wrap}.dialog .row .btn{flex:1;min-height:46px}
+.menu .btn{min-height:48px;text-align:left;font-size:15px}
+.steps{margin:0;padding-left:22px;display:grid;gap:8px;font-size:14px;line-height:1.45}.path{display:inline-block;font-family:Consolas,monospace;background:#eef4f1;border:1px solid #cbd8d2;border-radius:6px;padding:2px 6px;font-weight:700;overflow-wrap:anywhere}
+#fieldSheet,#noteSheet{position:fixed;left:0;right:0;bottom:0;z-index:9500;background:#fff;border-top:1px solid #cbd8d2;box-shadow:0 -10px 30px rgba(0,0,0,.2);padding:12px 12px calc(12px + env(safe-area-inset-bottom));display:grid;gap:10px}#fieldSheet[hidden],#noteSheet[hidden]{display:none}
+.fs-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.fs-head b{font-size:16px;color:var(--green)}.fs-head span{font-size:12px;color:var(--muted)}
+#fsInput{width:100%;font-size:22px;padding:12px;border:2px solid #17664b;border-radius:12px;text-align:center}
+#noteInput{width:100%;font:700 18px Arial,sans-serif;padding:10px 12px;border:2px solid var(--note);border-radius:12px;color:var(--note);resize:vertical;min-height:70px}
+.fs-nav{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.fs-nav .btn{min-height:48px}
+#pdfSheet{position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;justify-content:center;padding:10px}
+#pdfSheet[hidden]{display:none}
+.pdf-sheet-box{width:min(520px,100%);background:#fff;border:1px solid #cbd9d2;border-radius:16px;box-shadow:0 12px 40px rgba(5,35,25,.3);padding:14px;display:grid;gap:10px;text-align:center;color:#0f3d2e;font-family:inherit}
+.pdf-sheet-box b{font-size:16px}
+.pdf-sheet-name{font-size:13px;color:#33433b;overflow-wrap:anywhere}
+.pdf-sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pdf-sheet-actions button{min-height:46px;border-radius:12px;border:1px solid #cbd9d2;background:#f4faf6;font-weight:800;font-size:15px;color:#0f3d2e}
+.pdf-sheet-actions #pdfShareBtn{background:#0f7a4b;border-color:#0f7a4b;color:#fff}
+.pdf-sheet-msg{font-size:12px;color:#8a4b00}
+.pdf-sheet-msg:empty{display:none}
+.pdf-sheet-close,.pdf-sheet-where{border:0;background:none;color:#376454;font-weight:700;min-height:36px;cursor:pointer}
+.photo-item img{cursor:pointer}.ph-draw{position:absolute;left:4px;top:4px;background:rgba(15,61,46,.85);color:#fff;font-size:11px;font-weight:700;border-radius:8px;padding:3px 6px;pointer-events:none}
+#phEd{position:fixed;inset:0;z-index:9600;background:#2f3633;display:flex;flex-direction:column;height:100vh;height:100dvh}#phEd[hidden]{display:none}
+.pe-top{flex:none;display:flex;align-items:center;gap:8px;padding:8px 10px;padding-top:calc(8px + env(safe-area-inset-top));background:var(--green);color:#fff}.pe-top b{flex:1;min-width:0;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pe-top .btn{min-height:42px}
+.pe-tools{flex:none;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px 8px;background:#fff;border-bottom:1px solid #d6dfda}.pe-tools .btn{min-height:46px;padding:6px 4px;font-size:13px}
+.pe-hint{flex:none;background:#fff6dd;color:#4c5d54;font-size:13px;padding:6px 10px;border-bottom:1px solid #f0d48a}
+.pe-stage{position:relative;flex:1;min-height:0}#peWrap{position:absolute;inset:0;overflow:auto;touch-action:none;background:#59635f}#peCv{display:block;margin:0 auto;touch-action:none}
+.pe-stage .fzoom{display:flex;position:absolute;right:10px;bottom:10px;z-index:2}
+#peSel{flex:none;background:#fff;border-top:1px solid #cbd8d2;padding:10px 10px calc(10px + env(safe-area-inset-bottom));display:grid;gap:8px}#peSel[hidden]{display:none}
+#peSel label{font-weight:700;font-size:13px;color:var(--green)}#peText{width:100%;font:700 18px Arial,sans-serif;padding:10px 12px;border:2px solid #17664b;border-radius:12px;resize:none;min-height:48px}
+.pe-help{font-size:13px;color:#4c5d54}.pe-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pe-chip{width:40px;height:40px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px #c9d8cf;cursor:pointer}.pe-chip.on{box-shadow:0 0 0 3px #173129}.pe-row .grow{flex:1}
+body:not(.embed) #saveSuivi{display:none}body.embed #newBtn,body.embed [data-m=newBtn]{display:none}
+@media(max-width:900px){.pan-head{width:100%}}
+@media(max-width:650px){
+ .top{min-height:0;padding:6px 8px;gap:8px}.top h1{font-size:16px;white-space:nowrap}.top small{display:none}.long{display:none}.short{display:inline}
+ .zbtn{display:none}.fzoom{display:flex}.actions{flex-wrap:nowrap;gap:6px}.actions .btn{padding:10px 10px;font-size:13px;min-height:42px}
+ .bar{padding:6px 8px;gap:6px;font-size:12px}.bar .grow,.pan-tools{display:none}.pan-head{flex-wrap:nowrap;gap:8px}.pan-head strong{white-space:nowrap}.pan-head .status{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+ .pan-list{flex-wrap:nowrap;overflow-x:auto;width:100%;scrollbar-width:none;padding-bottom:2px}.pan-list::-webkit-scrollbar{display:none}.pan-pill{flex:none;white-space:nowrap;padding:8px 12px}
+ .page{margin:8px auto!important}
+ .bottom{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}.bottom .grow,#whereBtn,#newBtn{display:none}#moreBtn{display:flex}
+ .bottom .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 2px;font-size:11px;min-height:52px;line-height:1.1}.bottom .btn i{font-size:19px}
+ #bottomStatus{grid-column:1/-1;font-size:11px;text-align:center}#bottomStatus:empty{display:none}
+ .panel{bottom:auto;top:56px;max-height:calc(100dvh - 140px)}
+}
+.mailsubj{font-size:13px;color:#4b5a53;margin:6px 0 0}.row.wrap{flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header class="top">
+  <div><h1>📐 <span class="long">Prise de cotes — rénovation toiture</span><span class="short">Prise de cotes</span></h1><small id="topSub">Les cotes sont enregistrées sur ce téléphone jusqu'à l'export</small></div>
+  <div class="actions"><button class="btn secondary zbtn" id="zoomOut" aria-label="Dézoomer">−</button><button class="btn secondary zbtn" id="zoomReset">Adapter</button><button class="btn secondary zbtn" id="zoomIn" aria-label="Zoomer">+</button><button class="btn save" id="saveSuivi">💾 <span class="long">Enregistrer dans le suivi</span><span class="short">Enregistrer</span></button><button class="btn primary" id="download">📄 <span class="long">Exporter le </span>PDF</button></div>
+</header>
+<div class="layout">
+  <div class="bar">
+    <div class="pan-head"><strong id="panTitle">Pan 1</strong><span class="status" id="status">Chargement de la trame…</span></div>
+    <div class="grow"></div>
+    <div class="pan-list" id="panList"></div>
+    <div class="pan-tools"><button class="btn secondary small" id="renamePan">✏️ Renommer</button><button class="btn secondary small" id="duplicatePan">⧉ Dupliquer</button><button class="btn danger small" id="deletePan">🗑️ Supprimer</button></div>
+  </div>
+  <div class="error" id="error"></div>
+  <div class="viewer-wrap"><div id="loading" class="loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;background:#59635f;z-index:8">Chargement de la trame…</div><div id="viewerContainer" class="pdfViewerContainer"><div id="viewer" class="pdfViewer"></div></div>
+    <div class="noteHint" id="noteHint" hidden><span>👆 Touche le plan là où tu veux écrire</span><button type="button" id="noteCancel">Annuler</button></div>
+    <div class="fzoom"><button type="button" id="fzIn" aria-label="Zoomer">+</button><button type="button" id="fzOut" aria-label="Dézoomer">−</button><button type="button" id="fzFit" aria-label="Toute la page">⤢</button></div></div>
+  <div class="bottom">
+    <button class="btn dark" id="addPan"><i>＋</i> <span>Ajouter un pan</span></button>
+    <button class="btn secondary" id="noteBtn"><i>📝</i> <span>Annotation</span></button>
+    <button class="btn secondary" id="photosBtn"><i>📷</i> <span>Photos (<span id="photoCount">0</span>)</span></button>
+    <button class="btn secondary" id="whereBtn"><i>📂</i> <span>Où déposer le PDF</span></button>
+    <button class="btn secondary" id="newBtn"><i>↺</i> <span>Nouveau relevé</span></button>
+    <button class="btn secondary" id="moreBtn"><i>⋯</i> <span>Plus</span></button>
+    <div class="grow"></div><span class="status" id="bottomStatus"></span>
+  </div>
+</div>
+<div class="panel" id="photoPanel">
+  <h3>📷 Photos à ajouter au PDF</h3>
+  <div class="empty">Choisis une ou plusieurs photos. Elles sont allégées automatiquement et placées après les pans, une par page. Tu peux écrire une légende sous chaque photo. <b>Touche une photo pour dessiner dessus.</b></div>
+  <input id="photoInput" type="file" accept="image/*" multiple style="margin-top:8px;max-width:100%">
+  <div class="photo-list" id="photoList"></div>
+  <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn secondary" id="closePhotos">Fermer</button></div>
+</div>
+<div class="overlay" id="resumeDialog" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="resumeTitle"><h2 id="resumeTitle">Relevé en cours</h2><p id="resumeText"></p><div class="row"><button class="btn primary" id="resumeYes">Reprendre ce relevé</button><button class="btn secondary" id="resumeNo">Nouveau relevé</button></div></div></div>
+<div class="overlay" id="whereDialog" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="whereTitle"><h2 id="whereTitle">📂 Où déposer le PDF de la prise de cotes</h2>
+  <ol class="steps"><li>Ouvre l'explorateur de fichiers et va dans :<br><span class="path" id="wherePath">W:\Business\Triangle energie\AFFAIRES</span></li><li>Ouvre le dossier du client.</li><li>Crée un dossier nommé :<br><span class="path">11 - PRISE DE COTE</span></li><li>Dépose-y le PDF de la prise de cotes.</li><li>Envoie le mail à BE Réno Énergie et à Sécurité Énergie : appuie sur <b>📧 Préparer le mail</b>, puis complète le chemin du dossier et envoie.</li></ol>
+  <p class="mailsubj" id="whereSubj"></p>
+  <p class="status" id="whereMsg"></p>
+  <div class="row wrap"><button class="btn primary" id="prepMail">📧 Préparer le mail</button><button class="btn secondary" id="copyMail">✉️ Copier le texte</button><button class="btn secondary" id="copyPath">📋 Copier le chemin</button><button class="btn secondary" id="whereClose">Fermer</button></div></div></div>
+<div class="overlay" id="moreDialog" hidden><div class="dialog menu" role="dialog" aria-modal="true" aria-labelledby="moreTitle"><h2 id="moreTitle">Plus d'actions</h2>
+  <button class="btn secondary" type="button" data-m="renamePan">✏️ Renommer le pan</button><button class="btn secondary" type="button" data-m="duplicatePan">⧉ Dupliquer le pan</button><button class="btn danger" type="button" data-m="deletePan">🗑️ Supprimer le pan</button><button class="btn secondary" type="button" data-m="whereBtn">📂 Où déposer le PDF</button><button class="btn secondary" type="button" data-m="newBtn">↺ Nouveau relevé</button>
+  <button class="btn primary" type="button" id="moreClose" style="text-align:center">Fermer</button></div></div>
+<div id="fieldSheet" hidden><div class="fs-head"><b id="fsLabel"></b><span id="fsPos"></span></div><input id="fsInput" type="text" inputmode="text" autocomplete="off" enterkeyhint="next"><div class="fs-nav"><button class="btn secondary" id="fsPrev">◀ Précédent</button><button class="btn primary" id="fsOk">✓ OK</button><button class="btn secondary" id="fsNext">Suivant ▶</button></div></div>
+<div id="noteSheet" hidden><div class="fs-head"><b>📝 Annotation</b><span>Fais glisser l'annotation sur le plan pour la déplacer</span></div><textarea id="noteInput" rows="2" placeholder="Écris ton annotation" autocomplete="off"></textarea><div class="fs-nav"><button class="btn danger" id="noteDel">🗑 Supprimer</button><button class="btn primary" id="noteOk" style="grid-column:span 2">✓ OK</button></div></div>
+<div id="phEd" hidden>
+  <div class="pe-top"><b>✏️ Dessiner sur la photo</b><button class="btn secondary" type="button" id="peUndo" disabled>↺ Annuler</button><button class="btn primary" type="button" id="peDone">✓ Terminé</button></div>
+  <div class="pe-tools"><button class="btn secondary" type="button" data-t="rect">▭ Rectangle + bulle</button><button class="btn secondary" type="button" data-t="arrow">↔ Flèche cotée</button><button class="btn secondary" type="button" data-t="bubble">💬 Bulle de texte</button><button class="btn secondary" type="button" data-t="line">╱ Trait</button></div>
+  <div class="pe-hint" id="peHint"></div>
+  <div class="pe-stage"><div id="peWrap"><canvas id="peCv"></canvas></div>
+  <div class="fzoom"><button type="button" id="peIn" aria-label="Zoomer">+</button><button type="button" id="peOut" aria-label="Dézoomer">−</button><button type="button" id="peFit" aria-label="Toute la photo">⤢</button></div></div>
+  <div id="peSel" hidden><label for="peText" id="peLab">Texte</label><div id="peLineHelp" class="pe-help" hidden>Touche le trait pour ajouter un point, fais glisser un rond pour le déplacer. Touche un rond puis « Supprimer le point » pour l’enlever.</div><textarea id="peText" rows="1" autocomplete="off"></textarea>
+    <div class="pe-row"><span id="peChips" class="pe-row"></span><span class="grow"></span><button class="btn danger" type="button" id="pePtDel" hidden>✕ Supprimer le point</button><button class="btn danger" type="button" id="peDel">🗑 Supprimer</button><button class="btn secondary" type="button" id="peOk">✓ OK</button></div></div>
+</div>
+<script>
+(function(){
+'use strict';
+const BASE='trame.pdf';
+const GENERAL=['Date','Client','Affaire','Intervenant'];
+const TOUCH=window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+const loading=document.getElementById('loading'), error=document.getElementById('error'), status=document.getElementById('status'), bottomStatus=document.getElementById('bottomStatus');
+const panTitle=document.getElementById('panTitle'), panList=document.getElementById('panList');
+let baseBytes=null, currentPan=0, pans=[], photos=[], started=false;
+const params=new URLSearchParams(location.search);
+const prefill={Affaire:params.get('affaire')||'',Client:params.get('client')||'',Date:params.get('date')||'',Intervenant:params.get('intervenant')||''};
+const hasPrefill=Object.values(prefill).some(Boolean);
+// Ouvert depuis un point de contrôle de Suivi Chantier (?embed=1) : le relevé est enregistré dans le suivi.
+const EMBED=params.get('embed')==='1';
+function fail(msg){loading.style.display='none';error.style.display='block';error.textContent=msg;status.textContent='Erreur';}
+function newId(){return Math.random().toString(36).slice(2,10);}
+function newPanState(name,bytes,notes){return {name,bytes,notes:notes||[],viewer:null,pdfDoc:null,eventBus:null,linkService:null,container:null,ready:false,userZoom:false};}
+function helpText(){return TOUCH?'Touche une case pour la remplir.':'Clique dans une case pour la remplir.';}
+
+// ---------- Lien avec Suivi Chantier ----------
+let dirty=false,parentOrigin='',pendingSave=null,synced=0;
+function parentOk(o){return /^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.googleusercontent\.com$/.test(o)||o==='https://script.google.com'||/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(o);}
+function toParent(m){if(!parentOrigin)return;try{window.parent.postMessage(Object.assign({sc:'tool',tool:'cotes'},m),parentOrigin);}catch(e){}}
+function setDirty(v){if(dirty===v)return;dirty=v;toParent({type:'dirty',value:v});}
+function changed(){if(!started)return;setDirty(true);schedulePersist();}
+window.addEventListener('message',e=>{if(!parentOrigin||e.source!==window.parent||e.origin!==parentOrigin)return;const d=e.data||{};if(d.sc!=='suivi'||!pendingSave)return;if(d.type==='saved')pendingSave.ok();if(d.type==='error')pendingSave.ko(new Error(d.message||'erreur inconnue'));});
+
+// ---------- Sauvegarde automatique sur l'appareil (IndexedDB) ----------
+const DB='prise_cotes_toiture',STORE='kv',KEY=EMBED?('suivi|'+prefill.Affaire+'|'+(params.get('k')||'')):'releve';
+function idb(){return new Promise((ok,ko)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE);r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error);});}
+async function idbGet(){try{const db=await idb();return await new Promise(ok=>{const t=db.transaction(STORE).objectStore(STORE).get(KEY);t.onsuccess=()=>ok(t.result||null);t.onerror=()=>ok(null);});}catch(e){return null;}}
+async function idbSet(v){const db=await idb();return new Promise((ok,ko)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(v,KEY);tx.oncomplete=()=>ok();tx.onerror=()=>ko(tx.error);});}
+async function idbDel(){try{const db=await idb();await new Promise(ok=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(KEY);tx.oncomplete=ok;tx.onerror=ok;});}catch(e){}}
+let persistTimer=null;
+function schedulePersist(){if(!started)return;clearTimeout(persistTimer);persistTimer=setTimeout(persistNow,1200);}
+async function persistNow(){if(!started)return;clearTimeout(persistTimer);try{const st=pans[currentPan];if(st&&st.pdfDoc)await savePanAt(currentPan);
+  await idbSet({v:1,savedAt:Date.now(),dirty,synced,current:currentPan,pans:pans.map(p=>({name:p.name,bytes:p.bytes,notes:cleanNotes(p.notes)})),photos:photos.map(p=>({blob:p.blob,caption:p.caption||'',name:p.name||'',marks:cleanMarks(p.marks)}))});
+  bottomStatus.textContent='✓ Enregistré sur cet appareil à '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+(EMBED&&dirty?' — pas encore dans le suivi':'');
+ }catch(e){console.warn(e);bottomStatus.textContent='⚠ Sauvegarde sur l’appareil impossible : '+(EMBED?'enregistre dans le suivi':'exporte le PDF')+' avant de fermer.';}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persistNow();});
+
+// ---------- Trame : texte centré, infos générales ----------
+async function loadBase(){const resp=await fetch(BASE,{cache:'no-store'});if(!resp.ok)throw new Error('Impossible de charger trame.pdf ('+resp.status+').');return new Uint8Array(await resp.arrayBuffer());}
+async function centerFields(bytes){try{const doc=await PDFLib.PDFDocument.load(bytes);fieldOrder=doc.getForm().getFields().map(f=>f.getName());doc.getForm().getFields().forEach(f=>{try{if(f.setAlignment)f.setAlignment(PDFLib.TextAlignment.Center);}catch(e){}});return new Uint8Array(await doc.save());}catch(e){console.warn('centrage',e);return bytes;}}
+async function readGeneral(bytes){const out={};try{const form=(await PDFLib.PDFDocument.load(bytes)).getForm();GENERAL.forEach(n=>{try{out[n]=form.getTextField(n).getText()||'';}catch(e){}});}catch(e){}return out;}
+async function fillGeneral(bytes,values){const doc=await PDFLib.PDFDocument.load(bytes);const form=doc.getForm();GENERAL.forEach(n=>{const v=String(values[n]||'').trim();if(!v)return;try{form.getTextField(n).setText(v);}catch(e){}});return new Uint8Array(await doc.save());}
+// Toutes les cases remplies d'un pan (texte libre, chiffres ou lettres) <-> trame vierge.
+async function readFields(bytes){const out={};const form=(await PDFLib.PDFDocument.load(bytes)).getForm();form.getFields().forEach(f=>{try{if(f instanceof PDFLib.PDFTextField){const v=f.getText();if(v)out[f.getName()]=v;}}catch(e){}});return out;}
+async function applyFields(bytes,fields){const doc=await PDFLib.PDFDocument.load(bytes);const form=doc.getForm();Object.keys(fields||{}).forEach(n=>{try{form.getTextField(n).setText(String(fields[n]));}catch(e){}});return new Uint8Array(await doc.save());}
+async function pan1Bytes(){const p=pans[0];if(p.pdfDoc)await savePanAt(0);return p.bytes||baseBytes;}
+
+// ---------- Visionneuse ----------
+function updatePanUi(){
+  const p=pans[currentPan];panTitle.textContent=(p?.name||'Pan')+' ('+(currentPan+1)+'/'+pans.length+')';
+  panList.innerHTML='';
+  pans.forEach((pp,i)=>{const b=document.createElement('button');b.className='pan-pill'+(i===currentPan?' active':'');b.textContent=pp.name;b.onclick=()=>switchPan(i);panList.appendChild(b);if(i===currentPan)setTimeout(()=>{try{b.scrollIntoView({block:'nearest',inline:'nearest'});}catch(e){}},0);});
+  document.getElementById('deletePan').disabled=false;
+}
+function showPan(i){pans.forEach((p,idx)=>{if(p.container)p.container.classList.toggle('active',idx===i);});}
+function fitPage(st){if(st&&st.viewer){try{st.viewer.currentScaleValue=window.innerWidth<=650?'page-width':'page-fit';}catch(e){}}}
+async function createPanViewer(i,bytes){
+  if(!window.pdfjsLib||!window.pdfjsViewer)throw new Error('Le moteur PDF n’est pas disponible.');
+  const state=pans[i];
+  if(state.viewer&&state.pdfDoc){showPan(i);return;}
+  const host=document.getElementById('viewerContainer');
+  const pane=document.createElement('div');pane.className='pdfViewerPane';
+  const inner=document.createElement('div');inner.className='pdfViewer';pane.appendChild(inner);host.appendChild(pane);
+  state.container=pane;state.eventBus=new pdfjsViewer.EventBus();state.linkService=new pdfjsViewer.PDFLinkService({eventBus:state.eventBus});
+  state.viewer=new pdfjsViewer.PDFViewer({container:pane,eventBus:state.eventBus,linkService:state.linkService,renderInteractiveForms:true,removePageBorders:false,enableScripting:false});
+  state.linkService.setViewer(state.viewer);
+  state.eventBus.on('pagesinit',()=>{fitPage(state);state.ready=true;if(state===pans[currentPan]){loading.style.display='none';status.textContent=helpText();}});
+  state.eventBus.on('pagesloaded',()=>{if(state===pans[currentPan])loading.style.display='none';});
+  state.eventBus.on('pagerendered',()=>renderNotes(state));
+  state.eventBus.on('scalechanging',()=>setTimeout(()=>renderNotes(state),0));
+  const doc=await pdfjsLib.getDocument({data:bytes.slice()}).promise;
+  state.pdfDoc=doc;state.bytes=bytes.slice();state.linkService.setDocument(doc,null);state.viewer.setDocument(doc);showPan(i);
+}
+async function savePanAt(i){const state=pans[i];if(!state.pdfDoc)return state.bytes;const saved=await state.pdfDoc.saveDocument();state.bytes=new Uint8Array(saved);return state.bytes;}
+async function saveCurrentPan(){return savePanAt(currentPan);}
+function closeAll(){closeSheet();closeNote();setNoteMode(false);}
+async function switchPan(i){try{if(i===currentPan)return;closeAll();await saveCurrentPan();currentPan=i;updatePanUi();loading.style.display='flex';await createPanViewer(i,pans[i].bytes||baseBytes);showPan(i);loading.style.display='none';status.textContent=helpText();schedulePersist();}catch(e){console.error(e);fail('Impossible de changer de pan : '+(e.message||e));}}
+async function addPanWith(bytes,name,at,notes){const i=(at===undefined)?pans.length:at;pans.splice(i,0,newPanState(name,bytes,notes));currentPan=i;updatePanUi();loading.style.display='flex';await createPanViewer(i,bytes);showPan(i);loading.style.display='none';status.textContent=helpText();setDirty(true);await persistNow();}
+async function addPan(){try{closeAll();await saveCurrentPan();const gen=await readGeneral(await pan1Bytes());const bytes=await fillGeneral(baseBytes,gen);await addPanWith(bytes,'Pan '+(pans.length+1));status.textContent='Nouveau pan prêt : date, client, affaire et intervenant repris du pan 1.';}catch(e){console.error(e);fail('Impossible d’ajouter un pan : '+(e.message||e));}}
+async function duplicatePan(){try{closeAll();const bytes=await saveCurrentPan();const src=pans[currentPan];await addPanWith(new Uint8Array(bytes||baseBytes),src.name+' (copie)',currentPan+1,cleanNotes(src.notes).map(n=>Object.assign(n,{id:newId()})));status.textContent='Pan dupliqué avec ses cotes et ses annotations.';}catch(e){console.error(e);fail('Impossible de dupliquer le pan : '+(e.message||e));}}
+function renamePan(){closeAll();const p=pans[currentPan];const n=prompt('Nom du pan (ex. Pan Nord) :',p.name);if(n===null)return;const v=n.trim();if(!v)return;p.name=v.slice(0,40);updatePanUi();changed();}
+async function deletePan(){closeAll();if(pans.length<2){alert('Il faut garder au moins un pan.');return;}const p=pans[currentPan];if(!confirm('Supprimer « '+p.name+' » et ses cotes ?'))return;
+  if(p.container)p.container.remove();if(p.pdfDoc)try{p.pdfDoc.destroy();}catch(e){}pans.splice(currentPan,1);currentPan=Math.max(0,currentPan-1);updatePanUi();loading.style.display='flex';await createPanViewer(currentPan,pans[currentPan].bytes||baseBytes);showPan(currentPan);loading.style.display='none';setDirty(true);await persistNow();status.textContent='Pan supprimé.';}
+
+// ---------- Saisie au doigt : grande zone en bas de l'écran (clavier normal : lettres et chiffres) ----------
+const sheet=document.getElementById('fieldSheet'),fsInput=document.getElementById('fsInput'),fsLabel=document.getElementById('fsLabel'),fsPos=document.getElementById('fsPos');
+let sheetField=null;
+function fieldLabel(n){if(/^[a-k]$/.test(n))return 'Cote '+n;if(/^\d{1,2}$/.test(n))return 'Tableau annexe — ligne '+String.fromCharCode(64+Number(n));if(/^x[1-6]$/.test(n))return 'Section des pannes — '+n;const map={Date:'Date',Client:'Client',Affaire:'N° d’affaire',Intervenant:'Intervenant',Bat:'Bât.',Rampant:'Rampant',Plat:'Type de faîtage — Plat',Boudin:'Type de faîtage — Boudin','Ventilée':'Type de faîtage — Ventilée',Bois:'Type de pannes — Bois',Mince:'Type de pannes — Profil mince',Epais:'Type de pannes — Profil épais','Qte travee':'Filets de sous-face — Qté de travées','Largeur travee':'Filets de sous-face — Largeur de travée'};return map[n]||n;}
+// Ordre « Suivant » : celui de la trame (date, client…, puis a, b, c…, puis les autres cotes).
+let fieldOrder=[];
+function currentFields(){const pane=pans[currentPan]?.container;if(!pane)return [];const rank=el=>{const i=fieldOrder.indexOf(el.name);return i<0?9999:i;};return [...pane.querySelectorAll('.annotationLayer input[type=text],.annotationLayer textarea')].map(el=>({el,k:rank(el),r:el.getBoundingClientRect()})).sort((a,b)=>a.k-b.k||(Math.abs(a.r.top-b.r.top)>6?a.r.top-b.r.top:a.r.left-b.r.left)).map(x=>x.el);}
+function pushValue(){if(!sheetField)return;sheetField.value=fsInput.value;sheetField.dispatchEvent(new Event('input',{bubbles:true}));}
+function commitField(){if(!sheetField)return;pushValue();sheetField.dispatchEvent(new Event('change',{bubbles:true}));sheetField.dispatchEvent(new FocusEvent('blur'));schedulePersist();}
+function openSheet(el){closeNote();if(sheetField&&sheetField!==el)commitField();sheetField=el;const list=currentFields();const idx=list.indexOf(el);fsLabel.textContent=fieldLabel(el.name||'');fsPos.textContent=(idx+1)+' / '+list.length;fsInput.value=el.value||'';sheet.hidden=false;try{el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}setTimeout(()=>{fsInput.focus();fsInput.select();},30);}
+function closeSheet(){if(!sheetField){sheet.hidden=true;return;}commitField();sheetField=null;sheet.hidden=true;fsInput.blur();}
+function moveSheet(d){const list=currentFields();const i=list.indexOf(sheetField);const next=list[i+d];if(next)openSheet(next);else closeSheet();}
+fsInput.addEventListener('input',pushValue);
+fsInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();moveSheet(1);}});
+document.getElementById('fsPrev').onclick=()=>moveSheet(-1);document.getElementById('fsNext').onclick=()=>moveSheet(1);document.getElementById('fsOk').onclick=closeSheet;
+const vc=document.getElementById('viewerContainer');
+vc.addEventListener('focusin',e=>{const el=e.target;if(!TOUCH||!el.closest||!el.closest('.annotationLayer'))return;if(!(el.matches('input[type=text]')||el.tagName==='TEXTAREA'))return;el.blur();openSheet(el);},true);
+// 05/11/2026 : sur téléphone, les cases ne font que 2 mm de haut — un appui simple PRÈS d'une case ouvre la case la plus proche
+if(TOUCH){let tp=null;const act=new Set();
+ vc.addEventListener('pointerdown',e=>{act.add(e.pointerId);if(e.pointerType==='mouse'||noteMode||act.size>1){tp=null;return;}tp={x:e.clientX,y:e.clientY,t:Date.now(),id:e.pointerId};},true);
+ vc.addEventListener('pointermove',e=>{if(tp&&tp.id===e.pointerId&&Math.hypot(e.clientX-tp.x,e.clientY-tp.y)>10)tp=null;},true);
+ vc.addEventListener('pointercancel',e=>{act.delete(e.pointerId);tp=null;},true);
+ vc.addEventListener('pointerup',e=>{act.delete(e.pointerId);const s=tp;tp=null;if(!s||s.id!==e.pointerId||noteMode||noteDrag)return;if(Math.hypot(e.clientX-s.x,e.clientY-s.y)>10||Date.now()-s.t>650)return;
+  const t=e.target;if(t&&t.closest&&t.closest('.annotationLayer input,.annotationLayer textarea,.note,button,.fzoom'))return;
+  let best=null,bd=1e9;currentFields().forEach(el=>{const r=el.getBoundingClientRect();if(!r.width||!r.height)return;const dx=Math.max(r.left-e.clientX,0,e.clientX-r.right),dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom),d=Math.hypot(dx,dy);if(d<bd){bd=d;best=el;}});
+  if(best&&bd<=26){e.preventDefault();openSheet(best);}},true);}
+vc.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('.annotationLayer'))changed();});vc.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('.annotationLayer'))changed();});vc.addEventListener('focusout',schedulePersist);
+
+// ---------- Annotations : texte libre posé n'importe où sur le plan ----------
+// Position en points PDF (coin haut-gauche de l'étiquette) : identique à l'écran et dans le PDF exporté.
+const NOTE_PT=9,NOTE_PAD=2.5,NOTE_LH=1.2;
+const noteSheet=document.getElementById('noteSheet'),noteInput=document.getElementById('noteInput');
+let noteMode=false,noteEdit=null,noteDrag=null;
+function cleanNotes(a){return (Array.isArray(a)?a:[]).filter(n=>n&&isFinite(n.x)&&isFinite(n.y)&&String(n.text||'').trim()).map(n=>({id:String(n.id||newId()),p:Number(n.p)||0,x:+n.x,y:+n.y,text:String(n.text).slice(0,400)}));}
+function setNoteMode(on){noteMode=!!on;vc.classList.toggle('noting',noteMode);document.getElementById('noteHint').hidden=!noteMode;document.getElementById('noteBtn').classList.toggle('on',noteMode);}
+function renderNotes(st){if(!st||!st.viewer)return;const n=st.viewer.pagesCount||0;for(let p=0;p<n;p++){const pv=st.viewer.getPageView(p);if(!pv||!pv.div||!pv.viewport)continue;let layer=pv.div.querySelector('.noteLayer');if(!layer){layer=document.createElement('div');layer.className='noteLayer';pv.div.appendChild(layer);}layer.innerHTML='';const vp=pv.viewport;
+  (st.notes||[]).forEach(nt=>{if((nt.p||0)!==p)return;const [vx,vy]=vp.convertToViewportPoint(nt.x,nt.y);const el=document.createElement('div');el.className='note'+(noteEdit&&noteEdit.id===nt.id?' sel':'');el.style.left=vx+'px';el.style.top=vy+'px';el.style.fontSize=(NOTE_PT*vp.scale)+'px';el.style.padding=(NOTE_PAD*vp.scale)+'px';el.textContent=nt.text||' ';el.dataset.id=nt.id;layer.appendChild(el);});}}
+function findNote(id){const st=pans[currentPan];return st&&(st.notes||[]).find(n=>n.id===id);}
+function openNote(id){closeSheet();if(noteEdit&&noteEdit.id!==id)closeNote();const n=findNote(id);if(!n)return;noteEdit={id};noteInput.value=n.text||'';noteSheet.hidden=false;renderNotes(pans[currentPan]);setTimeout(()=>{noteInput.focus();},30);}
+function closeNote(){if(!noteEdit)return;const st=pans[currentPan],id=noteEdit.id;noteEdit=null;noteSheet.hidden=true;noteInput.blur();const i=(st.notes||[]).findIndex(n=>n.id===id);if(i>=0){st.notes[i].text=noteInput.value.replace(/\s+$/,'').slice(0,400);if(!st.notes[i].text.trim())st.notes.splice(i,1);}renderNotes(st);changed();}
+noteInput.addEventListener('input',()=>{if(!noteEdit)return;const n=findNote(noteEdit.id);if(n){n.text=noteInput.value;renderNotes(pans[currentPan]);}});
+document.getElementById('noteOk').onclick=closeNote;
+document.getElementById('noteDel').onclick=()=>{if(!noteEdit)return;const st=pans[currentPan],id=noteEdit.id;noteEdit=null;noteSheet.hidden=true;noteInput.blur();st.notes=(st.notes||[]).filter(n=>n.id!==id);renderNotes(st);changed();};
+document.getElementById('noteBtn').onclick=()=>{const on=!noteMode;closeAll();setNoteMode(on);};
+document.getElementById('noteCancel').onclick=()=>setNoteMode(false);
+function pagePoint(page,clientX,clientY){const st=pans[currentPan];const p=Number(page.dataset.pageNumber||1)-1;const pv=st.viewer.getPageView(p);const box=(page.querySelector('.canvasWrapper')||page).getBoundingClientRect();const [x,y]=pv.viewport.convertToPdfPoint(clientX-box.left,clientY-box.top);return {p,x,y};}
+vc.addEventListener('click',e=>{if(!noteMode)return;const page=e.target.closest('.page');if(!page)return;e.preventDefault();e.stopPropagation();const st=pans[currentPan];const pt=pagePoint(page,e.clientX,e.clientY);const n={id:newId(),p:pt.p,x:pt.x,y:pt.y,text:''};st.notes=st.notes||[];st.notes.push(n);setNoteMode(false);openNote(n.id);},true);
+// Toucher une annotation : la modifier ; la faire glisser : la déplacer.
+vc.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('.note');if(!el||noteMode)return;e.preventDefault();e.stopPropagation();noteDrag={el,id:el.dataset.id,x0:e.clientX,y0:e.clientY,l0:parseFloat(el.style.left),t0:parseFloat(el.style.top),moved:false,page:el.closest('.page')};try{el.setPointerCapture(e.pointerId);}catch(err){}},true);
+vc.addEventListener('pointermove',e=>{if(!noteDrag)return;const dx=e.clientX-noteDrag.x0,dy=e.clientY-noteDrag.y0;if(!noteDrag.moved&&Math.hypot(dx,dy)<6)return;noteDrag.moved=true;noteDrag.el.style.left=(noteDrag.l0+dx)+'px';noteDrag.el.style.top=(noteDrag.t0+dy)+'px';e.preventDefault();},true);
+function endNoteDrag(){if(!noteDrag)return;const d=noteDrag;noteDrag=null;if(!d.moved){openNote(d.id);return;}const st=pans[currentPan],n=findNote(d.id);if(n&&d.page){const p=Number(d.page.dataset.pageNumber||1)-1;const [x,y]=st.viewer.getPageView(p).viewport.convertToPdfPoint(parseFloat(d.el.style.left),parseFloat(d.el.style.top));n.x=x;n.y=y;}renderNotes(st);changed();}
+vc.addEventListener('pointerup',endNoteDrag,true);vc.addEventListener('pointercancel',endNoteDrag,true);
+function drawNotes(doc,page,notes,font){const red=PDFLib.rgb(0.776,0.157,0.157),lh=NOTE_PT*NOTE_LH;
+  notes.forEach(n=>{const lines=String(n.text||'').split('\n').map(winAnsi);if(!lines.join('').trim())return;const w=Math.max(...lines.map(l=>font.widthOfTextAtSize(l,NOTE_PT)))+2*NOTE_PAD,h=lines.length*lh+2*NOTE_PAD;
+   page.drawRectangle({x:n.x,y:n.y-h,width:w,height:h,color:PDFLib.rgb(1,1,1),borderColor:red,borderWidth:0.9});
+   lines.forEach((l,k)=>page.drawText(l,{x:n.x+NOTE_PAD,y:n.y-NOTE_PAD-k*lh-(lh-NOTE_PT)/2-NOTE_PT*0.78,size:NOTE_PT,font,color:red}));});}
+
+// ---------- Photos : allégées, avec légende ----------
+function compressImage(file){return new Promise((ok,ko)=>{const url=URL.createObjectURL(file);const img=new Image();img.onload=()=>{try{const max=1600,s=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*s));c.height=Math.max(1,Math.round(img.naturalHeight*s));c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);c.toBlob(b=>b?ok(b):ko(new Error('conversion')),'image/jpeg',0.8);}catch(e){URL.revokeObjectURL(url);ko(e);}};img.onerror=()=>{URL.revokeObjectURL(url);ko(new Error('Image illisible'));};img.src=url;});}
+function renderPhotos(){
+  const list=document.getElementById('photoList');list.innerHTML='';document.getElementById('photoCount').textContent=photos.length;
+  if(!photos.length){list.innerHTML='<div class="empty" style="grid-column:1/-1">Aucune photo.</div>';return;}
+  photos.forEach((p,i)=>{if(!p.url)p.url=URL.createObjectURL(p.blob);const d=document.createElement('div');d.className='photo-item';const img=document.createElement('img');img.src=p.turl||p.url;img.alt='Photo '+(i+1);img.title='Toucher pour dessiner';img.onclick=()=>peOpen(i);
+   if((p.marks||[]).length&&!p.turl)photoThumb(p).then(u=>{if(u)img.src=u;});const tag=document.createElement('span');tag.className='ph-draw';tag.textContent=(p.marks||[]).length?'✏️ '+p.marks.length:'✏️ Dessiner';d.appendChild(tag);const cap=document.createElement('input');cap.placeholder='Légende (facultatif)';cap.value=p.caption||'';cap.maxLength=120;cap.oninput=()=>{p.caption=cap.value;changed();};const b=document.createElement('button');b.textContent='×';b.title='Retirer';b.setAttribute('aria-label','Retirer la photo');b.onclick=()=>{if((p.marks||[]).length&&!confirm('Retirer cette photo et ses dessins ?'))return;URL.revokeObjectURL(p.url);if(p.turl)URL.revokeObjectURL(p.turl);photos.splice(i,1);renderPhotos();changed();};d.append(img,cap,b);list.appendChild(d);});
+}
+document.getElementById('photoInput').addEventListener('change',async e=>{const files=[...(e.target.files||[])];e.target.value='';let bad=0;for(const f of files){if(!/^image\//.test(f.type)){bad++;continue;}try{const blob=await compressImage(f);photos.push({blob,url:URL.createObjectURL(blob),caption:'',name:f.name,marks:[]});}catch(err){bad++;}}renderPhotos();changed();if(bad)alert(bad+' fichier(s) ignoré(s) : ce ne sont pas des photos lisibles.');});
+
+// ---------- Dessin sur les photos : rectangle + bulle, flèche cotée, bulle de texte ----------
+// Les dessins sont gardés à part (coordonnées en pixels de la photo) : la photo d'origine reste intacte et modifiable.
+const PE_COL={rouge:'#e53935',bleu:'#1e5bd8',jaune:'#e0a100',vert:'#2e9e44'};
+function cleanMarks(a){return (Array.isArray(a)?a:[]).filter(m=>m&&['rect','arrow','bubble','line'].includes(m.t)).map(m=>{const o={t:m.t,color:PE_COL[m.color]?m.color:'rouge',text:String(m.text||'').slice(0,200)};if(m.t==='line')o.pts=(Array.isArray(m.pts)?m.pts:[]).filter(q=>q&&isFinite(q.x)&&isFinite(q.y)).map(q=>({x:+q.x,y:+q.y}));['x1','y1','x2','y2','bx','by','x','y','ax','ay'].forEach(k=>{if(m[k]!=null&&isFinite(m[k]))o[k]=+m[k];});return o;}).filter(m=>(m.t!=='bubble'||m.text.trim())&&(m.t!=='line'||m.pts.length>=2));}
+function peRR(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function peBox(ctx,U,text,cx,cy){ctx.font='bold '+(13*U)+'px Arial';const lines=String(text||' ').split('\n');const lh=16*U,pad=6*U;const w=Math.max(14*U,...lines.map(l=>ctx.measureText(l).width))+2*pad,h=lines.length*lh+2*pad-3*U;return {x:cx-w/2,y:cy-h/2,w,h,lines,lh,pad};}
+function peEdge(c,hw,hh,t){const dx=t.x-c.x,dy=t.y-c.y;if(!dx&&!dy)return {x:c.x,y:c.y};const k=Math.min(hw/Math.abs(dx||1e-9),hh/Math.abs(dy||1e-9));return k>=1?{x:t.x,y:t.y}:{x:c.x+dx*k,y:c.y+dy*k};}
+function peBubble(ctx,U,b,col,from,ghost){if(from){const e=peEdge({x:b.x+b.w/2,y:b.y+b.h/2},b.w/2,b.h/2,from);ctx.strokeStyle=col;ctx.lineWidth=2*U;ctx.beginPath();ctx.moveTo(from.x,from.y);ctx.lineTo(e.x,e.y);ctx.stroke();}
+ ctx.save();ctx.globalAlpha=ghost?0.55:1;ctx.shadowColor='rgba(0,0,0,.35)';ctx.shadowBlur=5*U;ctx.shadowOffsetY=1.5*U;ctx.fillStyle=col;peRR(ctx,b.x,b.y,b.w,b.h,3*U);ctx.fill();ctx.restore();
+ ctx.save();ctx.globalAlpha=ghost?0.8:1;ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.textAlign='center';ctx.font='bold '+(13*U)+'px Arial';b.lines.forEach((l,i)=>ctx.fillText(l,b.x+b.w/2,b.y+b.pad+b.lh*(i+0.5)-1*U));ctx.restore();}
+function peRectAnchor(m,c){const x0=Math.min(m.x1,m.x2),x1=Math.max(m.x1,m.x2),y0=Math.min(m.y1,m.y2),y1=Math.max(m.y1,m.y2);let x=Math.max(x0,Math.min(x1,c.x)),y=Math.max(y0,Math.min(y1,c.y));
+ if(x>x0&&x<x1&&y>y0&&y<y1){const d=[x-x0,x1-x,y-y0,y1-y],k=d.indexOf(Math.min(...d));if(k===0)x=x0;else if(k===1)x=x1;else if(k===2)y=y0;else y=y1;}return {x,y};}
+function peArrow(ctx,U,m){const dx=m.x2-m.x1,dy=m.y2-m.y1,L=Math.hypot(dx,dy)||1;ctx.font='bold '+(16*U)+'px Arial';const t=String(m.text||'').trim(),tw=t?ctx.measureText(t).width:0;
+ // cote au milieu seulement si la flèche est assez longue et pas trop verticale ; sinon à côté, à l'horizontale
+ const ux=dx/L,uy=dy/L,inl=!!t&&Math.abs(ux)>=0.5&&tw+14*U<=L*0.6;return {L,ux,uy,t,inl,gap:inl?tw+14*U:0,mx:(m.x1+m.x2)/2,my:(m.y1+m.y2)/2};}
+function paintMarks(ctx,marks,W,H,ui){const U=Math.max(W,H)/1000;
+ (marks||[]).forEach(m=>{const col=PE_COL[m.color]||PE_COL.rouge,has=String(m.text||'').trim();ctx.lineCap='round';ctx.lineJoin='round';
+  if(m.t==='rect'){ctx.strokeStyle=col;ctx.lineWidth=2.5*U;ctx.strokeRect(Math.min(m.x1,m.x2),Math.min(m.y1,m.y2),Math.abs(m.x2-m.x1),Math.abs(m.y2-m.y1));
+   if((has||ui)&&!m._p){const b=peBox(ctx,U,has?m.text:'Texte…',m.bx,m.by);peBubble(ctx,U,b,col,peRectAnchor(m,{x:m.bx,y:m.by}),!has);}}
+  else if(m.t==='arrow'){const g=peArrow(ctx,U,m),h1=Math.max(0,g.L/2-g.gap/2);ctx.strokeStyle=col;ctx.lineWidth=2.5*U;ctx.beginPath();ctx.moveTo(m.x1,m.y1);ctx.lineTo(m.x1+g.ux*h1,m.y1+g.uy*h1);ctx.moveTo(m.x2,m.y2);ctx.lineTo(m.x2-g.ux*h1,m.y2-g.uy*h1);ctx.stroke();
+   const hs=Math.min(11*U,g.L/6);/* pointes plus petites sur une flèche courte : le trait reste visible */[[m.x1,m.y1,1],[m.x2,m.y2,-1]].forEach(([x,y,s])=>{const bx=x+s*g.ux*hs*1.7,by=y+s*g.uy*hs*1.7;ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(bx-g.uy*hs*0.8,by+g.ux*hs*0.8);ctx.lineTo(bx+g.uy*hs*0.8,by-g.ux*hs*0.8);ctx.closePath();ctx.fill();});
+   const label=g.t||(ui?'cote…':'');
+   if(g.t&&!g.inl){// étiquette blanche à côté de la flèche (à droite, ou au-dessus pour une flèche couchée)
+    ctx.font='bold '+(16*U)+'px Arial';const bw=ctx.measureText(g.t).width+10*U,bh=22*U;let nx=-g.uy,ny=g.ux;if(Math.abs(nx)>=Math.abs(ny)){if(nx<0){nx=-nx;ny=-ny;}}else if(ny>0){nx=-nx;ny=-ny;}
+    const d=Math.abs(nx)*bw/2+Math.abs(ny)*bh/2+6*U,cx=g.mx+nx*d,cy=g.my+ny*d;ctx.save();ctx.fillStyle='rgba(255,255,255,.95)';peRR(ctx,cx-bw/2,cy-bh/2,bw,bh,3*U);ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1.2*U;ctx.stroke();
+    ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.t,cx,cy+0.5*U);ctx.restore();}
+   else if(label){let a=Math.atan2(g.uy,g.ux);if(a>Math.PI/2)a-=Math.PI;else if(a<-Math.PI/2)a+=Math.PI;ctx.save();ctx.translate(g.mx,g.my);ctx.rotate(a);ctx.font='bold '+(16*U)+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=4.5*U;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.strokeText(label,0,0);ctx.fillStyle=g.t?col:'rgba(0,0,0,.5)';ctx.fillText(label,0,0);ctx.restore();}}
+  else if(m.t==='bubble'){if(has||ui){const b=peBox(ctx,U,has?m.text:'Texte…',m.x,m.y);peBubble(ctx,U,b,col,m.ax!=null?{x:m.ax,y:m.ay}:null,!has);}}
+  else if(m.t==='line'&&(m.pts||[]).length>1){ctx.strokeStyle=col;ctx.lineWidth=2.5*U;ctx.beginPath();m.pts.forEach((q,k)=>k?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.stroke();}});}
+function loadImgUrl(u){return new Promise((ok,ko)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=()=>ko(new Error('Image illisible'));im.src=u;});}
+// Photo + dessins dans un canvas (max = plus grand côté voulu, 0 = taille d'origine).
+async function photoComposite(p,max){if(!p.url)p.url=URL.createObjectURL(p.blob);const im=await loadImgUrl(p.url);const W=im.naturalWidth,H=im.naturalHeight,s=max?Math.min(1,max/Math.max(W,H)):1;
+ const c=document.createElement('canvas');c.width=Math.max(1,Math.round(W*s));c.height=Math.max(1,Math.round(H*s));const g=c.getContext('2d');g.scale(s,s);g.drawImage(im,0,0,W,H);paintMarks(g,p.marks,W,H,false);return c;}
+async function photoThumb(p){try{const c=await photoComposite(p,480);const b=await new Promise(r=>c.toBlob(r,'image/jpeg',0.8));if(p.turl)URL.revokeObjectURL(p.turl);p.turl=URL.createObjectURL(b);return p.turl;}catch(e){return null;}}
+const pe={vsel:-1,el:document.getElementById('phEd'),cv:document.getElementById('peCv'),wrap:document.getElementById('peWrap'),i:-1,img:null,W:0,H:0,z:1,marks:[],sel:-1,mode:'',undo:[],color:'rouge'};
+const peU=()=>Math.max(pe.W,pe.H)/1000;
+const peText=document.getElementById('peText');
+function peSnap(){pe.undo.push(JSON.stringify(pe.marks));if(pe.undo.length>60)pe.undo.shift();document.getElementById('peUndo').disabled=false;}
+function peSize(){const c=pe.cv,cw=pe.W*pe.z,ch=pe.H*pe.z;let dpr=window.devicePixelRatio||1;if(cw*dpr>5000||ch*dpr>5000)dpr=Math.max(1,5000/Math.max(cw,ch));c.style.width=cw+'px';c.style.height=ch+'px';c.width=Math.round(cw*dpr);c.height=Math.round(ch*dpr);c._dpr=dpr;c.style.marginTop=Math.max(0,(pe.wrap.clientHeight-ch)/2)+'px';}
+function peFit(){const w=pe.wrap;pe.z=Math.min((w.clientWidth-8)/pe.W,(w.clientHeight-8)/pe.H);peSize();w.scrollLeft=0;w.scrollTop=0;peDraw();}
+function peZoom(z,cx,cy){const w=pe.wrap,r=w.getBoundingClientRect();cx=cx??r.width/2;cy=cy??r.height/2;const ix=(w.scrollLeft+cx)/pe.z,iy=(w.scrollTop+cy)/pe.z;pe.z=Math.max(0.05,Math.min(6,z));peSize();w.scrollLeft=ix*pe.z-cx;w.scrollTop=iy*pe.z-cy;peDraw();}
+function peHandles(m){if(!m)return [];if(m.t==='rect')return [{k:'c0',x:m.x1,y:m.y1},{k:'c1',x:m.x2,y:m.y1},{k:'c2',x:m.x2,y:m.y2},{k:'c3',x:m.x1,y:m.y2}];if(m.t==='arrow')return [{k:'e1',x:m.x1,y:m.y1},{k:'e2',x:m.x2,y:m.y2}];if(m.t==='bubble'&&m.ax!=null)return [{k:'tip',x:m.ax,y:m.ay}];if(m.t==='line')return (m.pts||[]).map((q,k)=>({k:'p'+k,x:q.x,y:q.y}));return [];}
+function peDraw(extra){if(!pe.img)return;const c=pe.cv,ctx=c.getContext('2d'),k=pe.z*c._dpr;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);ctx.setTransform(k,0,0,k,0,0);ctx.drawImage(pe.img,0,0,pe.W,pe.H);
+ paintMarks(ctx,extra?pe.marks.concat([extra]):pe.marks,pe.W,pe.H,true);const m=pe.marks[pe.sel];if(!m)return;const U=peU();
+ // sélection : poignées seulement (plus de cadre pointillé, demande de l'utilisateur : il gênait la lecture)
+ peHandles(m).forEach(h=>{ctx.fillStyle=(m.t==='line'&&h.k==='p'+pe.vsel)?'#1d63d8':'#fff';ctx.strokeStyle='#1d63d8';ctx.lineWidth=3/pe.z;ctx.beginPath();ctx.arc(h.x,h.y,11/pe.z,0,7);ctx.fill();ctx.stroke();});}
+function pePt(e){const r=pe.cv.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*pe.W,y:(e.clientY-r.top)/r.height*pe.H};}
+function peSegD(p,a,b){const dx=b.x-a.x,dy=b.y-a.y,L=dx*dx+dy*dy;let t=L?((p.x-a.x)*dx+(p.y-a.y)*dy)/L:0;t=Math.max(0,Math.min(1,t));return Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy));}
+function peHit(p){const tol=18/pe.z,ctx=pe.cv.getContext('2d'),U=peU(),M=pe.marks,inB=(b,g)=>p.x>=b.x-g&&p.x<=b.x+b.w+g&&p.y>=b.y-g&&p.y<=b.y+b.h+g;
+ const s=M[pe.sel];if(s)for(const h of peHandles(s))if(Math.hypot(p.x-h.x,p.y-h.y)<=tol*1.4)return {k:h.k,i:pe.sel};
+ for(let i=M.length-1;i>=0;i--){const m=M[i],txt=String(m.text||'').trim()?m.text:'Texte…';
+  if(m.t==='rect'){if(inB(peBox(ctx,U,txt,m.bx,m.by),4/pe.z))return {k:'rb',i};const x0=Math.min(m.x1,m.x2),x1=Math.max(m.x1,m.x2),y0=Math.min(m.y1,m.y2),y1=Math.max(m.y1,m.y2);
+   const out=p.x>=x0-tol&&p.x<=x1+tol&&p.y>=y0-tol&&p.y<=y1+tol,inner=p.x>x0+tol&&p.x<x1-tol&&p.y>y0+tol&&p.y<y1-tol;if(out&&!inner)return {k:'r',i};}
+  else if(m.t==='bubble'){if(inB(peBox(ctx,U,txt,m.x,m.y),4/pe.z))return {k:'b',i};if(m.ax!=null&&Math.hypot(p.x-m.ax,p.y-m.ay)<=tol)return {k:'tip',i};}
+  else if(m.t==='arrow'){if(peSegD(p,{x:m.x1,y:m.y1},{x:m.x2,y:m.y2})<=tol+10*U)return {k:'a',i};}
+  else if(m.t==='line'){for(let j=0;j<m.pts.length-1;j++)if(peSegD(p,m.pts[j],m.pts[j+1])<=tol+6*U)return {k:'l',i,seg:j};}}
+ return null;}
+const PE_HINT={rect:'👆 Fais glisser ton doigt sur la photo pour tracer le rectangle.',arrow:'👆 Trace la flèche d’un bout à l’autre en faisant glisser ton doigt.',bubble:'👆 Touche la photo là où tu veux la bulle.',line:'👆 Fais glisser ton doigt d’un point à l’autre pour tracer le trait.'};
+function peUi(){document.querySelectorAll('.pe-tools [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===pe.mode));
+ document.getElementById('peHint').textContent=PE_HINT[pe.mode]||(pe.marks.length?'Touche un élément pour le modifier ou le déplacer. Zoom : deux doigts ou + −.':'Choisis ce que tu veux ajouter : rectangle avec bulle, flèche cotée ou bulle de texte.');
+ const m=pe.marks[pe.sel],box=document.getElementById('peSel');box.hidden=!m;if(!m)return;
+ const isL=m.t==='line';document.getElementById('peLab').hidden=isL;peText.hidden=isL;document.getElementById('peLineHelp').hidden=!isL;document.getElementById('pePtDel').hidden=!(isL&&pe.vsel>=0&&m.pts.length>2);
+ document.getElementById('peLab').textContent=m.t==='arrow'?'Cote au milieu de la flèche (ex. 20 m)':'Texte de la bulle';peText.placeholder=m.t==='arrow'?'ex. 20 m':'Ton texte';if(document.activeElement!==peText)peText.value=m.text||'';
+ document.getElementById('peChips').innerHTML=Object.keys(PE_COL).map(c=>'<span class="pe-chip'+(m.color===c?' on':'')+'" data-c="'+c+'" title="'+c+'" style="background:'+PE_COL[c]+'"></span>').join('');}
+// focus tout de suite (pendant le toucher) : sinon l'iPhone n'ouvre pas le clavier
+function peSelect(i,focus,v){pe.sel=i;pe.vsel=v==null?-1:v;peUi();peDraw();if(focus&&i>=0){try{peText.focus({preventScroll:true});}catch(e){peText.focus();}peText._snap=true;}}
+peText.addEventListener('focus',()=>{peText._snap=false;});
+peText.addEventListener('input',()=>{const m=pe.marks[pe.sel];if(!m)return;if(!peText._snap){peSnap();peText._snap=true;}m.text=peText.value;peDraw();});
+peText.addEventListener('keydown',e=>{const m=pe.marks[pe.sel];if(e.key==='Enter'&&m&&m.t==='arrow'){e.preventDefault();peText.blur();}});
+document.getElementById('peChips').addEventListener('click',e=>{const c=e.target.closest('[data-c]'),m=pe.marks[pe.sel];if(!c||!m)return;peSnap();m.color=c.dataset.c;pe.color=c.dataset.c;peUi();peDraw();});
+document.getElementById('pePtDel').onclick=()=>{const m=pe.marks[pe.sel];if(!m||m.t!=='line'||pe.vsel<0||m.pts.length<3)return;peSnap();m.pts.splice(pe.vsel,1);peSelect(pe.sel,false,-1);};
+document.getElementById('peDel').onclick=()=>{if(pe.sel<0)return;peSnap();pe.marks.splice(pe.sel,1);peSelect(-1);};
+document.getElementById('peOk').onclick=()=>{peText.blur();peSelect(-1);};
+document.querySelectorAll('.pe-tools [data-t]').forEach(b=>b.onclick=()=>{peText.blur();pe.mode=pe.mode===b.dataset.t?'':b.dataset.t;pe.sel=-1;peUi();peDraw();});
+document.getElementById('peUndo').onclick=()=>{const s=pe.undo.pop();if(s==null)return;pe.marks=JSON.parse(s);pe.sel=-1;pe.vsel=-1;document.getElementById('peUndo').disabled=!pe.undo.length;peUi();peDraw();};
+document.getElementById('peIn').onclick=()=>peZoom(pe.z*1.4);document.getElementById('peOut').onclick=()=>peZoom(pe.z/1.4);document.getElementById('peFit').onclick=peFit;
+pe.wrap.addEventListener('wheel',e=>{if(!pe.img)return;e.preventDefault();const r=pe.wrap.getBoundingClientRect();peZoom(pe.z*(e.deltaY<0?1.15:1/1.15),e.clientX-r.left,e.clientY-r.top);},{passive:false});
+// toucher : un doigt = tracer / déplacer / faire défiler ; deux doigts = zoom
+let pd=null,ppan=null,pdraw=null,ppinch=null,phold=false;const pptr=new Map();
+function peCancel(){if(pd&&pd.snapped){const s=pe.undo.pop();if(s!=null)pe.marks=JSON.parse(s);document.getElementById('peUndo').disabled=!pe.undo.length;}pd=null;ppan=null;pdraw=null;}
+function pePinch(){const [a,b]=[...pptr.values()],r=pe.wrap.getBoundingClientRect();return {d:Math.hypot(a.x-b.x,a.y-b.y),cx:(a.x+b.x)/2-r.left,cy:(a.y+b.y)/2-r.top};}
+pe.cv.addEventListener('pointerdown',e=>{if(!pe.img)return;pptr.set(e.pointerId,{x:e.clientX,y:e.clientY});try{pe.cv.setPointerCapture(e.pointerId);}catch(err){}
+ if(pptr.size===2){peCancel();const q=pePinch();ppinch={d0:q.d,z0:pe.z,ix:(pe.wrap.scrollLeft+q.cx)/pe.z,iy:(pe.wrap.scrollTop+q.cy)/pe.z};phold=true;peDraw();e.preventDefault();return;}
+ if(pptr.size>2||phold)return;const p=pePt(e);e.preventDefault();
+ if(pe.mode){pdraw={x0:e.clientX,y0:e.clientY,a:p,b:p};return;}
+ const h=peHit(p);if(!h){ppan={x:e.clientX,y:e.clientY,l:pe.wrap.scrollLeft,t:pe.wrap.scrollTop,moved:false};return;}
+ pd={...h,p0:p,o:JSON.parse(JSON.stringify(pe.marks[h.i])),moved:false,snapped:false};});
+pe.cv.addEventListener('pointermove',e=>{if(pptr.has(e.pointerId))pptr.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(ppinch){if(pptr.size===2&&ppinch.d0){const q=pePinch();pe.z=Math.max(0.05,Math.min(6,ppinch.z0*q.d/ppinch.d0));peSize();pe.wrap.scrollLeft=ppinch.ix*pe.z-q.cx;pe.wrap.scrollTop=ppinch.iy*pe.z-q.cy;peDraw();}return;}if(phold)return;
+ if(ppan){const dx=e.clientX-ppan.x,dy=e.clientY-ppan.y;if(Math.hypot(dx,dy)>4)ppan.moved=true;pe.wrap.scrollLeft=ppan.l-dx;pe.wrap.scrollTop=ppan.t-dy;return;}
+ if(pdraw){pdraw.b=pePt(e);const a=pdraw.a,b=pdraw.b,col=pe.color;if(Math.hypot(e.clientX-pdraw.x0,e.clientY-pdraw.y0)>8){if(pe.mode==='rect')peDraw({t:'rect',x1:a.x,y1:a.y,x2:b.x,y2:b.y,color:col,text:'',_p:1});else if(pe.mode==='arrow')peDraw({t:'arrow',x1:a.x,y1:a.y,x2:b.x,y2:b.y,color:col,text:''});else if(pe.mode==='line')peDraw({t:'line',pts:[a,b],color:col,text:''});}return;}
+ if(!pd)return;const p=pePt(e),dx=p.x-pd.p0.x,dy=p.y-pd.p0.y;if(!pd.moved&&Math.hypot(dx,dy)*pe.z<6)return;if(!pd.snapped){peSnap();pd.snapped=true;}pd.moved=true;
+ const m=pe.marks[pd.i],o=pd.o;
+ if(pd.k==='c0'){m.x1=p.x;m.y1=p.y;}else if(pd.k==='c1'){m.x2=p.x;m.y1=p.y;}else if(pd.k==='c2'){m.x2=p.x;m.y2=p.y;}else if(pd.k==='c3'){m.x1=p.x;m.y2=p.y;}
+ else if(pd.k==='e1'){m.x1=p.x;m.y1=p.y;}else if(pd.k==='e2'){m.x2=p.x;m.y2=p.y;}else if(pd.k==='tip'){m.ax=p.x;m.ay=p.y;}
+ else if(pd.k==='rb'){m.bx=o.bx+dx;m.by=o.by+dy;}else if(pd.k==='b'){m.x=o.x+dx;m.y=o.y+dy;}
+ else if(/^p\d+$/.test(pd.k)){const q=m.pts[+pd.k.slice(1)];if(q){q.x=p.x;q.y=p.y;}}
+ else if(pd.k==='l'){m.pts=o.pts.map(q=>({x:q.x+dx,y:q.y+dy}));}
+ else if(pd.k==='a'||pd.k==='r'){m.x1=o.x1+dx;m.y1=o.y1+dy;m.x2=o.x2+dx;m.y2=o.y2+dy;if(pd.k==='r'){m.bx=o.bx+dx;m.by=o.by+dy;}}
+ peDraw();});
+function peLift(e){pptr.delete(e.pointerId);if(ppinch&&pptr.size<2)ppinch=null;if(phold){if(!pptr.size)phold=false;return true;}return false;}
+pe.cv.addEventListener('pointercancel',e=>{peLift(e);peCancel();pptr.clear();phold=false;ppinch=null;peDraw();});
+pe.cv.addEventListener('pointerup',e=>{if(peLift(e))return;
+ if(pdraw){const d=Math.hypot(e.clientX-pdraw.x0,e.clientY-pdraw.y0),U=peU(),a=pdraw.a,b=pdraw.b,mode=pe.mode;pdraw=null;let m=null;
+  const cx=v=>Math.max(60*U,Math.min(pe.W-60*U,v)),cy=v=>Math.max(40*U,Math.min(pe.H-40*U,v));
+  if(mode==='rect'){m=d<12?{t:'rect',x1:a.x-100*U,y1:a.y-70*U,x2:a.x+100*U,y2:a.y+70*U}:{t:'rect',x1:a.x,y1:a.y,x2:b.x,y2:b.y};m.bx=cx(Math.max(m.x1,m.x2)+130*U);m.by=cy(Math.min(m.y1,m.y2)-60*U);}
+  else if(mode==='arrow')m=d<12?{t:'arrow',x1:a.x-150*U,y1:a.y,x2:a.x+150*U,y2:a.y}:{t:'arrow',x1:a.x,y1:a.y,x2:b.x,y2:b.y};
+  else if(mode==='bubble')m={t:'bubble',x:cx(a.x),y:cy(a.y),ax:a.x-110*U,ay:a.y+90*U};
+  else if(mode==='line')m={t:'line',pts:d<12?[{x:a.x-120*U,y:a.y},{x:a.x+120*U,y:a.y}]:[{x:a.x,y:a.y},{x:b.x,y:b.y}]};
+  if(m){peSnap();m.color=pe.color;m.text='';pe.marks.push(m);pe.mode='';peSelect(pe.marks.length-1,mode!=='line');}return;}
+ if(ppan){const mv=ppan.moved;ppan=null;if(!mv&&pe.sel>=0){peText.blur();peSelect(-1);}return;}
+ if(!pd)return;const d=pd;pd=null;
+ if(!d.moved&&/^p\d+$/.test(d.k)){peSelect(d.i,false,+d.k.slice(1));return;}
+ if(!d.moved&&d.k==='l'){const m=pe.marks[d.i];if(pe.sel===d.i){const a=m.pts[d.seg],b=m.pts[d.seg+1],dx=b.x-a.x,dy=b.y-a.y,L=dx*dx+dy*dy;let s=L?((d.p0.x-a.x)*dx+(d.p0.y-a.y)*dy)/L:0.5;s=Math.max(0.05,Math.min(0.95,s));peSnap();m.pts.splice(d.seg+1,0,{x:a.x+s*dx,y:a.y+s*dy});peSelect(d.i,false,d.seg+1);}else peSelect(d.i,false);return;}
+ if(!d.moved){peSelect(d.i,false);}else{if(/^p\d+$/.test(d.k))pe.vsel=+d.k.slice(1);peUi();peDraw();}});
+async function peOpen(i){const p=photos[i];if(!p)return;closeAll();try{if(!p.url)p.url=URL.createObjectURL(p.blob);pe.img=await loadImgUrl(p.url);}catch(e){alert('Impossible d’ouvrir cette photo.');return;}
+ pe.i=i;pe.W=pe.img.naturalWidth;pe.H=pe.img.naturalHeight;pe.marks=JSON.parse(JSON.stringify(cleanMarks(p.marks)));pe.sel=-1;pe.mode='';pe.undo=[];document.getElementById('peUndo').disabled=true;
+ pe.el.hidden=false;peUi();requestAnimationFrame(()=>requestAnimationFrame(peFit));}
+async function peClose(){peText.blur();const p=photos[pe.i];pe.el.hidden=true;if(!p)return;const before=JSON.stringify(cleanMarks(p.marks));p.marks=cleanMarks(pe.marks);pe.img=null;
+ if(JSON.stringify(p.marks)!==before){if(p.turl){URL.revokeObjectURL(p.turl);p.turl=null;}changed();}renderPhotos();}
+document.getElementById('peDone').onclick=peClose;
+window.addEventListener('resize',()=>{if(!pe.el.hidden&&pe.img){peSize();peDraw();}});
+
+// ---------- Export ----------
+function cleanFilePart(value){return String(value||'').trim().replace(/[\\/:*?\"<>|]/g,'-').replace(/\s+/g,' ').replace(/^-+|-+$/g,'');}
+async function getExportIdentity(){const g=await readGeneral(await pan1Bytes());return {affaire:cleanFilePart(g.Affaire),client:cleanFilePart(g.Client)};}
+function buildExportName(identity){const parts=['Prise_de_cotes_renovation'];if(identity.affaire)parts.push(identity.affaire);if(identity.client)parts.push(identity.client);return parts.join(' - ')+'.pdf';}
+function winAnsi(s){return String(s||'').replace(/[’‘]/g,"'").replace(/[“”«»]/g,'"').replace(/[–—]/g,'-').replace(/…/g,'...').replace(/[^\x20-\x7E\u00A0-\u00FF]/g,'');}
+function wrapText(font,text,size,maxW){const words=text.split(/\s+/);const lines=[];let line='';for(const w of words){const t=line?line+' '+w:w;if(font.widthOfTextAtSize(t,size)>maxW&&line){lines.push(line);line=w;}else line=t;}if(line)lines.push(line);return lines.slice(0,3);}
+function canSharePdf(){try{return TOUCH&&typeof navigator.share==='function'&&typeof File==='function';}catch(e){return false;}}
+function savePdfFile(file){const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+function showPdfSheet(file){let el=document.getElementById('pdfSheet');if(!el){el=document.createElement('div');el.id='pdfSheet';document.body.appendChild(el);}
+  const kb=Math.max(1,Math.round(file.size/1024));el.innerHTML='<div class="pdf-sheet-box"><b>📄 PDF prêt</b><div class="pdf-sheet-name"></div><div class="pdf-sheet-actions"><button type="button" id="pdfShareBtn">📤 Partager</button><button type="button" id="pdfSaveBtn">⬇ Enregistrer</button></div><div class="pdf-sheet-msg" id="pdfSheetMsg"></div><button type="button" class="pdf-sheet-where" id="pdfWhereBtn">📂 Où déposer le PDF ?</button><button type="button" class="pdf-sheet-close" id="pdfCloseBtn">Fermer</button></div>';
+  el.querySelector('.pdf-sheet-name').textContent=file.name+' · '+(kb>1024?(kb/1024).toLocaleString('fr-FR',{maximumFractionDigits:1})+' Mo':kb+' ko');el.hidden=false;
+  document.getElementById('pdfCloseBtn').onclick=()=>{el.hidden=true;};document.getElementById('pdfSaveBtn').onclick=()=>savePdfFile(file);document.getElementById('pdfWhereBtn').onclick=openWhere;
+  document.getElementById('pdfShareBtn').onclick=async()=>{try{if(navigator.canShare&&!navigator.canShare({files:[file]}))throw new Error('fichiers');await navigator.share({files:[file],title:file.name.replace(/\.pdf$/,'')});}catch(e){if(e&&e.name==='AbortError')return;document.getElementById('pdfSheetMsg').textContent='Le partage n’est pas disponible ici : utilise « ⬇ Enregistrer ».';}};}
+async function buildFinalPdf(){
+    closeAll();await saveCurrentPan();
+    if(!window.PDFLib)throw new Error('PDF-lib n’est pas disponible.');
+    status.textContent='Création du PDF final…';
+    const gen=await readGeneral(await pan1Bytes());
+    const out=await PDFLib.PDFDocument.create();
+    for(let i=0;i<pans.length;i++){
+      const bytes=pans[i].bytes||baseBytes;
+      const src=await PDFLib.PDFDocument.load(bytes);
+      const form=src.getForm();
+      // Les infos générales du pan 1 font référence pour tous les pans.
+      if(i>0)GENERAL.forEach(n=>{const v=String(gen[n]||'').trim();if(!v)return;try{form.getTextField(n).setText(v);}catch(e){}});
+      form.getFields().forEach(f=>{try{if(f.setAlignment)f.setAlignment(PDFLib.TextAlignment.Center);}catch(e){}});
+      // Aplatit les champs : les valeurs deviennent définitivement visibles.
+      // Titre de la page : « N° d'affaire - Nom du client - Rampant » à la place de « TRAME PRINCIPE DE PRISE DE COTES »
+      let ramp='';try{ramp=String(form.getTextField('Rampant').getText()||'').trim();}catch(e){}
+      try{form.flatten({updateFieldAppearances:true});}catch(e){console.warn('flatten pan '+(i+1)+':',e);}
+      try{const pg0=src.getPage(0);const tf=await src.embedFont(PDFLib.StandardFonts.HelveticaBold);
+       const title=winAnsi([gen.Affaire,gen.Client,ramp||(pans[i].name||('Pan '+(i+1)))].map(v=>String(v||'').trim()).filter(Boolean).join(' - '));
+       pg0.drawRectangle({x:106,y:779,width:385,height:33,color:PDFLib.rgb(1,1,1)});let fs=20;while(fs>9&&tf.widthOfTextAtSize(title,fs)>378)fs-=0.5;
+       pg0.drawText(title,{x:297.5-tf.widthOfTextAtSize(title,fs)/2,y:789,size:fs,font:tf,color:PDFLib.rgb(0,0,0)});}catch(e){console.warn('titre pan '+(i+1)+':',e);}
+      try{const notes=cleanNotes(pans[i].notes);if(notes.length){const nf=await src.embedFont(PDFLib.StandardFonts.HelveticaBold);src.getPages().forEach((pg,p)=>drawNotes(src,pg,notes.filter(n=>n.p===p),nf));}}catch(e){console.warn('annotations pan '+(i+1)+':',e);}
+      const pages=await out.copyPages(src,src.getPageIndices());pages.forEach(pg=>out.addPage(pg));
+    }
+    const font=await out.embedFont(PDFLib.StandardFonts.Helvetica);
+    for(const p of photos){
+      const drawn=(p.marks||[]).length?await photoComposite(p,0):null;// photo avec ses dessins
+      const img=await out.embedJpg(new Uint8Array(await (drawn?await new Promise(r=>drawn.toBlob(r,'image/jpeg',0.88)):p.blob).arrayBuffer()));
+      // photo en paysage → page A4 en paysage (photo plus grande)
+      const dims=img.scale(1);const land=dims.width>dims.height;const PW=land?842:595,PH=land?595:842;
+      const cap=winAnsi(p.caption).trim();const lines=cap?wrapText(font,cap,12,PW-60):[];const capH=lines.length?lines.length*16+20:0;
+      const maxW=PW-40,maxH=PH-40-capH;const s=Math.min(maxW/dims.width,maxH/dims.height,1);const w=dims.width*s,h=dims.height*s;
+      const page=out.addPage([PW,PH]);const y=capH+(PH-capH-h)/2;page.drawImage(img,{x:(PW-w)/2,y,width:w,height:h});
+      lines.forEach((l,k)=>{const tw=font.widthOfTextAtSize(l,12);page.drawText(l,{x:(PW-tw)/2,y:capH-20-k*16,size:12,font,color:PDFLib.rgb(0.1,0.2,0.16)});});
+    }
+    const bytes=await out.save();const name=buildExportName(await getExportIdentity());
+    return {bytes,name,summary:pans.length+' pan(s)'+(photos.length?' + '+photos.length+' photo(s)':'')};
+}
+async function exportPdf(){
+  try{
+    const r=await buildFinalPdf();const msg='PDF final prêt — '+r.summary+'.';
+    if(canSharePdf()){showPdfSheet(new File([r.bytes],r.name,{type:'application/pdf'}));status.textContent=msg;return;}
+    savePdfFile(new File([r.bytes],r.name,{type:'application/pdf'}));status.textContent=msg+' Voir « 📂 Où déposer le PDF ».';
+  }catch(e){console.error(e);status.textContent='Erreur à l’export';alert('Le PDF final n’a pas pu être créé : '+(e.message||e));}
+}
+
+// ---------- Enregistrement dans le suivi (PDF + données modifiables) ----------
+function blobToDataUrl(b){return new Promise((ok,ko)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>ko(r.error);r.readAsDataURL(b);});}
+function dataUrlToBlob(u){const m=/^data:([^;]+);base64,(.*)$/.exec(String(u||''));if(!m)throw new Error('image');const s=atob(m[2]),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return new Blob([a],{type:m[1]});}
+async function buildData(){await saveCurrentPan();const out={v:1,tool:'cotes',savedAt:Date.now(),pans:[],photos:[]};
+  for(let i=0;i<pans.length;i++){const p=pans[i];const bytes=p.pdfDoc?await savePanAt(i):(p.bytes||baseBytes);out.pans.push({name:p.name,fields:await readFields(bytes),notes:cleanNotes(p.notes)});}
+  for(const p of photos)out.photos.push({data:await blobToDataUrl(p.blob),caption:p.caption||'',name:p.name||'',marks:cleanMarks(p.marks)});return out;}
+async function saveToSuivi(){const b=document.getElementById('saveSuivi');if(b.disabled)return;const old=b.innerHTML;b.disabled=true;b.textContent='⏳ Enregistrement…';
+  try{const pdf=await buildFinalPdf();const data=await buildData();status.textContent='Envoi dans le suivi…';
+   await new Promise((ok,ko)=>{pendingSave={ok,ko};toParent({type:'save',file:{name:pdf.name,blob:new Blob([pdf.bytes],{type:'application/pdf'})},data,summary:pdf.summary});setTimeout(()=>ko(new Error('le suivi ne répond pas')),180000);});
+   synced=data.savedAt;setDirty(false);await persistNow();status.textContent='✓ Prise de cotes enregistrée dans le suivi.';
+  }catch(e){console.error(e);status.textContent='⚠ Pas enregistré dans le suivi';alert('La prise de cotes n’a pas pu être enregistrée dans le suivi : '+(e.message||e)+'\nTes cotes restent sur cet appareil : réessaie.');}
+  finally{pendingSave=null;b.disabled=false;b.innerHTML=old;}}
+
+// ---------- Où déposer le PDF ----------
+function openWhere(){document.getElementById('whereMsg').textContent='';document.getElementById('whereDialog').hidden=false;
+   mailParts().then(p=>{document.getElementById('whereSubj').textContent='Objet du mail : '+p.subject;}).catch(()=>{});}
+  // Mail « prise de cotes déposée » : destinataires, objet et texte prêts ; le chemin du dossier est à compléter soi-même.
+  const MAIL_TO=['be-reno-energie@le-triangle.fr','securite.energie@le-triangle.fr'];
+  async function mailParts(){let g={};try{g=await readGeneral(await pan1Bytes());}catch(e){}
+   const aff=String(g.Affaire||prefill.Affaire||'').trim(),cli=String(g.Client||prefill.Client||'').trim(),who=String(g.Intervenant||prefill.Intervenant||'').trim();
+   const A=aff||'[N° d’affaire]',C=cli||'[Client]';
+   return {subject:'Prise de cotes déposée — '+A+' '+C,
+    body:'Bonjour,\n\nLa prise de cotes du chantier '+A+' – '+C+' est déposée dans le dossier suivant :\n[À COMPLÉTER : chemin du dossier]\n\nCordialement,'+(who?'\n'+who:'')};}
+  function openUrl(u){const a=document.createElement('a');a.href=u;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();}
+  async function copyText(s){try{await navigator.clipboard.writeText(s);return true;}catch(e){}
+   try{const ta=document.createElement('textarea');ta.value=s;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok;}catch(e){return false;}}
+  document.getElementById('prepMail').onclick=async()=>{const m=document.getElementById('whereMsg'),p=await mailParts();
+   const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+   if(mobile){// application Outlook du téléphone ; si elle ne s'ouvre pas, la messagerie par défaut
+    const q='to='+encodeURIComponent(MAIL_TO.join(','))+'&subject='+encodeURIComponent(p.subject)+'&body='+encodeURIComponent(p.body);
+    openUrl('ms-outlook://compose?'+q);m.textContent='Ouverture d’Outlook… Complète le chemin du dossier avant d’envoyer.';
+    setTimeout(()=>{if(!document.hidden){openUrl('mailto:'+MAIL_TO.join(',')+'?subject='+encodeURIComponent(p.subject)+'&body='+encodeURIComponent(p.body.replace(/\n/g,'\r\n')));m.textContent='Si Outlook ne s’est pas ouvert, utilise « ✉️ Copier le texte ».';}},1800);}
+   else{// PC : le logiciel de mail par défaut (Outlook s'il est réglé comme messagerie par défaut)
+    openUrl('mailto:'+MAIL_TO.join(',')+'?subject='+encodeURIComponent(p.subject)+'&body='+encodeURIComponent(p.body.replace(/\n/g,'\r\n')));
+    m.textContent='Ouverture du mail dans Outlook… Complète le chemin du dossier avant d’envoyer.';}};
+  document.getElementById('copyMail').onclick=async()=>{const m=document.getElementById('whereMsg'),p=await mailParts();
+   const ok=await copyText(p.body);m.textContent=ok?'✓ Texte copié (sans l’objet). Destinataires : '+MAIL_TO.join(', '):'Copie impossible ici : recopie le texte à la main.';};
+document.getElementById('whereBtn').onclick=openWhere;
+document.getElementById('whereClose').onclick=()=>{document.getElementById('whereDialog').hidden=true;};
+document.getElementById('whereDialog').addEventListener('click',e=>{if(e.target.id==='whereDialog')e.target.hidden=true;});
+document.getElementById('copyPath').onclick=async()=>{const t=document.getElementById('wherePath').textContent;const m=document.getElementById('whereMsg');try{await navigator.clipboard.writeText(t);m.textContent='✓ Chemin copié.';}catch(e){m.textContent='Copie impossible ici : sélectionne le chemin à la main.';}};
+
+// ---------- Boutons ----------
+document.getElementById('addPan').onclick=addPan;
+document.getElementById('duplicatePan').onclick=duplicatePan;
+document.getElementById('renamePan').onclick=renamePan;
+document.getElementById('deletePan').onclick=deletePan;
+document.getElementById('download').onclick=exportPdf;
+document.getElementById('saveSuivi').onclick=saveToSuivi;
+function currentViewer(){return pans[currentPan]?.viewer||null;}
+function zoomBy(d){const v=currentViewer();if(v){v.currentScale=Math.max(.3,Math.min(v.currentScale+d,4));pans[currentPan].userZoom=true;}}
+function zoomFit(){const st=pans[currentPan];if(st){st.userZoom=false;fitPage(st);}}
+document.getElementById('zoomIn').onclick=()=>zoomBy(0.15);document.getElementById('zoomOut').onclick=()=>zoomBy(-0.15);document.getElementById('zoomReset').onclick=zoomFit;
+document.getElementById('fzIn').onclick=()=>zoomBy(0.25);document.getElementById('fzOut').onclick=()=>zoomBy(-0.25);document.getElementById('fzFit').onclick=zoomFit;
+let resizeTimer=null;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{const st=pans[currentPan];if(st&&!st.userZoom)fitPage(st);},200);});
+document.getElementById('photosBtn').onclick=()=>{closeAll();document.getElementById('photoPanel').classList.toggle('open');};
+document.getElementById('closePhotos').onclick=()=>document.getElementById('photoPanel').classList.remove('open');
+document.getElementById('newBtn').onclick=async()=>{if(!confirm('Commencer un nouveau relevé ? Le relevé en cours sera effacé de cet appareil (pense à l’exporter avant).'))return;started=false;clearTimeout(persistTimer);await idbDel();location.reload();};
+const moreDialog=document.getElementById('moreDialog');
+document.getElementById('moreBtn').onclick=()=>{closeAll();moreDialog.hidden=false;};
+document.getElementById('moreClose').onclick=()=>{moreDialog.hidden=true;};
+moreDialog.addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(e.target===moreDialog||b)moreDialog.hidden=true;if(b)document.getElementById(b.dataset.m).click();});
+
+// ---------- Démarrage ----------
+async function startNew(){pans=[];photos=[];synced=0;const bytes=hasPrefill?await fillGeneral(baseBytes,prefill):baseBytes;pans.push(newPanState('Pan 1',bytes));currentPan=0;updatePanUi();renderPhotos();await createPanViewer(0,bytes);started=true;setDirty(false);await persistNow();if(hasPrefill)status.textContent='Affaire, client, date et intervenant repris du suivi. '+helpText();}
+async function resume(saved){synced=saved.synced||0;pans=saved.pans.map((p,i)=>newPanState(p.name||('Pan '+(i+1)),p.bytes?new Uint8Array(p.bytes):baseBytes,cleanNotes(p.notes)));photos=(saved.photos||[]).filter(p=>p&&p.blob).map(p=>({blob:p.blob,caption:p.caption||'',name:p.name||'',marks:cleanMarks(p.marks)}));currentPan=Math.min(Math.max(0,saved.current||0),pans.length-1);updatePanUi();renderPhotos();await createPanViewer(currentPan,pans[currentPan].bytes);started=true;status.textContent='Relevé repris. '+helpText();bottomStatus.textContent='✓ Enregistré sur cet appareil';}
+async function fromData(d){pans=[];for(const p of d.pans){pans.push(newPanState(String(p.name||('Pan '+(pans.length+1))).slice(0,40),await applyFields(baseBytes,p.fields||{}),cleanNotes(p.notes)));}
+  photos=[];for(const p of (d.photos||[])){try{photos.push({blob:dataUrlToBlob(p.data),caption:String(p.caption||''),name:String(p.name||''),marks:cleanMarks(p.marks)});}catch(e){}}
+  synced=d.savedAt||0;currentPan=0;updatePanUi();renderPhotos();await createPanViewer(0,pans[0].bytes);started=true;setDirty(false);await persistNow();status.textContent='Prise de cotes du suivi ouverte. '+helpText();}
+function askResume(saved,info){return new Promise(ok=>{const d=document.getElementById('resumeDialog');const when=new Date(saved.savedAt||Date.now());let t='Un relevé est enregistré sur ce téléphone'+(info.Affaire?' pour l’affaire '+info.Affaire:'')+(info.Client?' ('+info.Client+')':'')+' : '+saved.pans.length+' pan(s), '+(saved.photos||[]).length+' photo(s), le '+when.toLocaleDateString('fr-FR')+' à '+when.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'.';if(hasPrefill&&prefill.Affaire&&prefill.Affaire!==info.Affaire)t+=' Tu ouvres l’outil pour l’affaire '+prefill.Affaire+' : choisis « Nouveau relevé » pour la commencer (exporte d’abord l’ancien si besoin).';document.getElementById('resumeText').textContent=t;d.hidden=false;loading.style.display='none';document.getElementById('resumeYes').onclick=()=>{d.hidden=true;ok(true);};document.getElementById('resumeNo').onclick=()=>{if(!confirm('Le relevé enregistré sera effacé de ce téléphone. Continuer ?'))return;d.hidden=true;ok(false);};});}
+// Depuis le suivi : des modifications faites sur cet appareil mais pas encore enregistrées dans le suivi.
+function askDraft(saved,other){return new Promise(ok=>{const d=document.getElementById('resumeDialog');const when=new Date(saved.savedAt||Date.now());const at=when.toLocaleDateString('fr-FR')+' à '+when.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});document.getElementById('resumeTitle').textContent=other?'Autre version sur cet appareil':'Modifications pas encore enregistrées';document.getElementById('resumeText').textContent=other?'Cet appareil a une version de cette prise de cotes du '+at+' ('+saved.pans.length+' pan(s), '+(saved.photos||[]).length+' photo(s)) qui n’est pas celle du suivi. Veux-tu la reprendre ? Il faudra ensuite l’enregistrer dans le suivi.':'Le '+at+', cette prise de cotes a été modifiée sur cet appareil sans être enregistrée dans le suivi. Veux-tu reprendre ces modifications ?';document.getElementById('resumeYes').textContent=other?'Reprendre cette version':'Reprendre mes modifications';document.getElementById('resumeNo').textContent='Non, ouvrir la version du suivi';d.hidden=false;loading.style.display='none';document.getElementById('resumeYes').onclick=()=>{d.hidden=true;ok(true);};document.getElementById('resumeNo').onclick=()=>{if(!confirm('Les modifications non enregistrées seront effacées de cet appareil. Continuer ?'))return;d.hidden=true;ok(false);};});}
+async function embedStart(){
+  document.body.classList.add('embed');document.getElementById('topSub').textContent='Relevé du suivi : touche « 💾 Enregistrer dans le suivi » quand tu as fini';status.textContent='Ouverture depuis le suivi…';
+  const msg=await new Promise(ok=>{let n=0;const ping=()=>{try{window.parent.postMessage({sc:'tool',tool:'cotes',type:'ready'},'*');}catch(e){}};const t=setInterval(()=>{if(++n>75){clearInterval(t);window.removeEventListener('message',h);ok({timeout:true});}else ping();},400);
+    function h(e){const d=e.data||{};if(e.source!==window.parent||!parentOk(e.origin)||d.sc!=='suivi'||d.type!=='load')return;parentOrigin=e.origin;clearInterval(t);window.removeEventListener('message',h);ok(d);}
+    window.addEventListener('message',h);ping();});
+  if(msg.timeout){fail('Le suivi ne répond pas : ferme puis rouvre la prise de cotes depuis le point de contrôle.');return;}
+  const server=msg.data&&Array.isArray(msg.data.pans)&&msg.data.pans.length?msg.data:null;
+  if(msg.error&&!server)alert('La prise de cotes enregistrée dans le suivi n’a pas pu être ouverte ('+msg.error+').');
+  const draft=await idbGet();
+  const other=!!(draft&&!draft.dirty&&draft.synced&&(!server||draft.synced!==server.savedAt));
+  if(draft&&(draft.dirty||other)&&Array.isArray(draft.pans)&&draft.pans.length&&(!server||(draft.savedAt||0)>(server.savedAt||0))){const keep=await askDraft(draft,other);loading.style.display='flex';if(keep){await resume(draft);dirty=false;setDirty(true);return;}await idbDel();}
+  if(server){await fromData(server);return;}
+  await startNew();
+}
+(async function(){
+  try{
+    baseBytes=await centerFields(await loadBase());
+    if(EMBED){await embedStart();return;}
+    const saved=await idbGet();
+    if(saved&&Array.isArray(saved.pans)&&saved.pans.length){const info=await readGeneral(saved.pans[0].bytes?new Uint8Array(saved.pans[0].bytes):baseBytes);const keep=await askResume(saved,info);loading.style.display='flex';if(keep){await resume(saved);return;}await idbDel();}
+    await startNew();
+  }catch(e){console.error(e);fail('Impossible de charger la trame PDF : '+(e.message||e));}
+})();
+})();
+</script>
+</body>
+</html>
