@@ -294,21 +294,24 @@ function peBubble(ctx,U,b,col,from,ghost){if(from){const e=peEdge({x:b.x+b.w/2,y
  ctx.save();ctx.globalAlpha=ghost?0.8:1;ctx.fillStyle='#fff';ctx.textBaseline='middle';ctx.textAlign='center';ctx.font='bold '+(13*U)+'px Arial';b.lines.forEach((l,i)=>ctx.fillText(l,b.x+b.w/2,b.y+b.pad+b.lh*(i+0.5)-1*U));ctx.restore();}
 function peRectAnchor(m,c){const x0=Math.min(m.x1,m.x2),x1=Math.max(m.x1,m.x2),y0=Math.min(m.y1,m.y2),y1=Math.max(m.y1,m.y2);let x=Math.max(x0,Math.min(x1,c.x)),y=Math.max(y0,Math.min(y1,c.y));
  if(x>x0&&x<x1&&y>y0&&y<y1){const d=[x-x0,x1-x,y-y0,y1-y],k=d.indexOf(Math.min(...d));if(k===0)x=x0;else if(k===1)x=x1;else if(k===2)y=y0;else y=y1;}return {x,y};}
-function peArrow(ctx,U,m){const dx=m.x2-m.x1,dy=m.y2-m.y1,L=Math.hypot(dx,dy)||1;ctx.font='bold '+(16*U)+'px Arial';const t=String(m.text||'').trim(),tw=t?ctx.measureText(t).width:0;
- // cote au milieu seulement si la flèche est assez longue et pas trop verticale ; sinon à côté, à l'horizontale
- const ux=dx/L,uy=dy/L,inl=!!t&&Math.abs(ux)>=0.5&&tw+14*U<=L*0.6;return {L,ux,uy,t,inl,gap:inl?tw+14*U:0,mx:(m.x1+m.x2)/2,my:(m.y1+m.y2)/2};}
+// 05/11/2026 : la cote reste TOUJOURS sur la ligne ; pointes et texte s'adaptent à la longueur de la flèche
+function peArrow(ctx,U,m,ph){const dx=m.x2-m.x1,dy=m.y2-m.y1,L=Math.hypot(dx,dy)||1;const t=String(m.text||'').trim(),lab=t||ph||'';
+ const ux=dx/L,uy=dy/L,hs=Math.max(3*U,Math.min(11*U,L/7));
+ ctx.font='bold '+(16*U)+'px Arial';const tw16=lab?ctx.measureText(lab).width:0;
+ const avail=Math.max(0,L-2*hs*1.7-6*U);let fs=16*U;if(lab&&tw16+8*U>avail)fs=Math.max(6*U,16*U*avail/(tw16+8*U));
+ const tw=tw16*fs/(16*U);return {L,ux,uy,t,inl:true,hs,fs,gap:t?tw+fs*0.5:0,mx:(m.x1+m.x2)/2,my:(m.y1+m.y2)/2};}
 function paintMarks(ctx,marks,W,H,ui){const U=Math.max(W,H)/1000;
  (marks||[]).forEach(m=>{const col=PE_COL[m.color]||PE_COL.rouge,has=String(m.text||'').trim();ctx.lineCap='round';ctx.lineJoin='round';
   if(m.t==='rect'){ctx.strokeStyle=col;ctx.lineWidth=2.5*U;ctx.strokeRect(Math.min(m.x1,m.x2),Math.min(m.y1,m.y2),Math.abs(m.x2-m.x1),Math.abs(m.y2-m.y1));
    if((has||ui)&&!m._p){const b=peBox(ctx,U,has?m.text:'Texte…',m.bx,m.by);peBubble(ctx,U,b,col,peRectAnchor(m,{x:m.bx,y:m.by}),!has);}}
-  else if(m.t==='arrow'){const g=peArrow(ctx,U,m),h1=Math.max(0,g.L/2-g.gap/2);ctx.strokeStyle=col;ctx.lineWidth=2.5*U;ctx.beginPath();ctx.moveTo(m.x1,m.y1);ctx.lineTo(m.x1+g.ux*h1,m.y1+g.uy*h1);ctx.moveTo(m.x2,m.y2);ctx.lineTo(m.x2-g.ux*h1,m.y2-g.uy*h1);ctx.stroke();
-   const hs=Math.min(11*U,g.L/6);/* pointes plus petites sur une flèche courte : le trait reste visible */[[m.x1,m.y1,1],[m.x2,m.y2,-1]].forEach(([x,y,s])=>{const bx=x+s*g.ux*hs*1.7,by=y+s*g.uy*hs*1.7;ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(bx-g.uy*hs*0.8,by+g.ux*hs*0.8);ctx.lineTo(bx+g.uy*hs*0.8,by-g.ux*hs*0.8);ctx.closePath();ctx.fill();});
+  else if(m.t==='arrow'){const g=peArrow(ctx,U,m,ui?'cote…':''),h1=Math.max(0,g.L/2-g.gap/2);ctx.strokeStyle=col;ctx.lineWidth=2.5*U;ctx.beginPath();ctx.moveTo(m.x1,m.y1);ctx.lineTo(m.x1+g.ux*h1,m.y1+g.uy*h1);ctx.moveTo(m.x2,m.y2);ctx.lineTo(m.x2-g.ux*h1,m.y2-g.uy*h1);ctx.stroke();
+   const hs=g.hs;/* pointes adaptées à la longueur */[[m.x1,m.y1,1],[m.x2,m.y2,-1]].forEach(([x,y,s])=>{const bx=x+s*g.ux*hs*1.7,by=y+s*g.uy*hs*1.7;ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(bx-g.uy*hs*0.8,by+g.ux*hs*0.8);ctx.lineTo(bx+g.uy*hs*0.8,by-g.ux*hs*0.8);ctx.closePath();ctx.fill();});
    const label=g.t||(ui?'cote…':'');
    if(g.t&&!g.inl){// étiquette blanche à côté de la flèche (à droite, ou au-dessus pour une flèche couchée)
     ctx.font='bold '+(16*U)+'px Arial';const bw=ctx.measureText(g.t).width+10*U,bh=22*U;let nx=-g.uy,ny=g.ux;if(Math.abs(nx)>=Math.abs(ny)){if(nx<0){nx=-nx;ny=-ny;}}else if(ny>0){nx=-nx;ny=-ny;}
     const d=Math.abs(nx)*bw/2+Math.abs(ny)*bh/2+6*U,cx=g.mx+nx*d,cy=g.my+ny*d;ctx.save();ctx.fillStyle='rgba(255,255,255,.95)';peRR(ctx,cx-bw/2,cy-bh/2,bw,bh,3*U);ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1.2*U;ctx.stroke();
     ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.t,cx,cy+0.5*U);ctx.restore();}
-   else if(label){let a=Math.atan2(g.uy,g.ux);if(a>Math.PI/2)a-=Math.PI;else if(a<-Math.PI/2)a+=Math.PI;ctx.save();ctx.translate(g.mx,g.my);ctx.rotate(a);ctx.font='bold '+(16*U)+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=4.5*U;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.strokeText(label,0,0);ctx.fillStyle=g.t?col:'rgba(0,0,0,.5)';ctx.fillText(label,0,0);ctx.restore();}}
+   else if(label){let a=Math.atan2(g.uy,g.ux);if(a>Math.PI/2)a-=Math.PI;else if(a<-Math.PI/2)a+=Math.PI;ctx.save();ctx.translate(g.mx,g.my);ctx.rotate(a);ctx.font='bold '+g.fs+'px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=4.5*g.fs/16;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.strokeText(label,0,0);ctx.fillStyle=g.t?col:'rgba(0,0,0,.5)';ctx.fillText(label,0,0);ctx.restore();}}
   else if(m.t==='bubble'){if(has||ui){const b=peBox(ctx,U,has?m.text:'Texte…',m.x,m.y);peBubble(ctx,U,b,col,m.ax!=null?{x:m.ax,y:m.ay}:null,!has);}}
   else if(m.t==='line'&&(m.pts||[]).length>1){ctx.strokeStyle=col;ctx.lineWidth=2.5*U;ctx.beginPath();m.pts.forEach((q,k)=>k?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.stroke();}});}
 function loadImgUrl(u){return new Promise((ok,ko)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=()=>ko(new Error('Image illisible'));im.src=u;});}
