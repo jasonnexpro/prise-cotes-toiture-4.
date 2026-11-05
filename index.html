@@ -15,7 +15,10 @@ body{overflow:hidden;display:flex;flex-direction:column;height:100vh;height:100d
 .short{display:none}#moreBtn{display:none}
 .layout{flex:1;min-height:0;display:flex;flex-direction:column}.bar{background:#fff;border-bottom:1px solid #d6dfda;padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.bar .grow{flex:1}.status{font-size:13px;color:#64766e}.error{background:#ffe8e8;color:#8b1d1d;padding:10px 14px;display:none}
 .viewer-wrap{position:relative;flex:1;min-height:0;overflow:hidden}.pdfViewerContainer{position:absolute;inset:0;overflow:hidden;background:#69736f}.pdfViewerPane{position:absolute;inset:0;overflow:auto;background:#69736f;display:none}.pdfViewerPane.active{display:block}.pdfViewer{padding-bottom:30px}.page{margin:16px auto!important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-.fzoom{position:absolute;right:10px;bottom:10px;z-index:6;display:none;flex-direction:column;gap:6px}.fzoom button{width:44px;height:44px;border-radius:12px;border:1px solid #cbd8d2;background:rgba(255,255,255,.95);color:var(--green);font:700 20px Arial;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.fzoom{position:absolute;right:10px;bottom:10px;z-index:6;display:none;flex-direction:column;gap:6px}
+@media (hover:none) and (pointer:coarse){.annotationLayer .textWidgetAnnotation input,.annotationLayer .textWidgetAnnotation textarea{outline:1px solid rgba(29,99,216,.45)!important;outline-offset:0;background-color:rgba(29,99,216,.07)!important}
+ /* boutons de zoom en ligne, sous la fiche (ils ne cachent plus de case) + place pour remonter la fiche quand on zoome */
+ .fzoom{flex-direction:row!important}#viewer::after{content:"";display:block;height:90px}}.fzoom button{width:44px;height:44px;border-radius:12px;border:1px solid #cbd8d2;background:rgba(255,255,255,.95);color:var(--green);font:700 20px Arial;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .noteHint{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:7;background:var(--yellow);color:#173129;font-weight:700;font-size:14px;padding:8px 10px;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;gap:10px;align-items:center;width:max-content;max-width:calc(100% - 20px)}.noteHint[hidden]{display:none}.noteHint button{border:0;border-radius:8px;background:#fff;color:var(--green);font-weight:700;padding:6px 10px}
 .noting .annotationLayer{pointer-events:none}.noting .page{cursor:crosshair}
 .noteLayer{position:absolute;inset:0;pointer-events:none;z-index:5}.note{position:absolute;pointer-events:auto;background:#fff;border:1.5px solid var(--note);color:var(--note);border-radius:3px;font-family:Arial,sans-serif;font-weight:700;line-height:1.2;white-space:pre;touch-action:none;cursor:move;user-select:none;-webkit-user-select:none}.note.sel{outline:3px solid #1d63d8;outline-offset:2px}
@@ -229,6 +232,15 @@ fsInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();mo
 document.getElementById('fsPrev').onclick=()=>moveSheet(-1);document.getElementById('fsNext').onclick=()=>moveSheet(1);document.getElementById('fsOk').onclick=closeSheet;
 const vc=document.getElementById('viewerContainer');
 vc.addEventListener('focusin',e=>{const el=e.target;if(!TOUCH||!el.closest||!el.closest('.annotationLayer'))return;if(!(el.matches('input[type=text]')||el.tagName==='TEXTAREA'))return;el.blur();openSheet(el);},true);
+// 05/11/2026 : sur téléphone, les cases ne font que 2 mm de haut — un appui simple PRÈS d'une case ouvre la case la plus proche
+if(TOUCH){let tp=null;const act=new Set();
+ vc.addEventListener('pointerdown',e=>{act.add(e.pointerId);if(e.pointerType==='mouse'||noteMode||act.size>1){tp=null;return;}tp={x:e.clientX,y:e.clientY,t:Date.now(),id:e.pointerId};},true);
+ vc.addEventListener('pointermove',e=>{if(tp&&tp.id===e.pointerId&&Math.hypot(e.clientX-tp.x,e.clientY-tp.y)>10)tp=null;},true);
+ vc.addEventListener('pointercancel',e=>{act.delete(e.pointerId);tp=null;},true);
+ vc.addEventListener('pointerup',e=>{act.delete(e.pointerId);const s=tp;tp=null;if(!s||s.id!==e.pointerId||noteMode||noteDrag)return;if(Math.hypot(e.clientX-s.x,e.clientY-s.y)>10||Date.now()-s.t>650)return;
+  const t=e.target;if(t&&t.closest&&t.closest('.annotationLayer input,.annotationLayer textarea,.note,button,.fzoom'))return;
+  let best=null,bd=1e9;currentFields().forEach(el=>{const r=el.getBoundingClientRect();if(!r.width||!r.height)return;const dx=Math.max(r.left-e.clientX,0,e.clientX-r.right),dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom),d=Math.hypot(dx,dy);if(d<bd){bd=d;best=el;}});
+  if(best&&bd<=26){e.preventDefault();openSheet(best);}},true);}
 vc.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('.annotationLayer'))changed();});vc.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('.annotationLayer'))changed();});vc.addEventListener('focusout',schedulePersist);
 
 // ---------- Annotations : texte libre posé n'importe où sur le plan ----------
